@@ -117,6 +117,7 @@ WSGI_APPLICATION = 'greatbritishbeer.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Default SQLite database for development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -125,10 +126,26 @@ DATABASES = {
 }
 
 # Heroku PostgreSQL configuration
-if 'DATABASE_URL' in os.environ and dj_database_url:
-    DATABASES = {
-        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
-    }
+# Override with PostgreSQL if DATABASE_URL is available
+if 'DATABASE_URL' in os.environ:
+    if dj_database_url:
+        DATABASES = {
+            'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+        }
+    else:
+        # Manual PostgreSQL configuration if dj_database_url is not available
+        import urllib.parse as urlparse
+        url = urlparse.urlparse(os.environ['DATABASE_URL'])
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': url.path[1:],
+                'USER': url.username,
+                'PASSWORD': url.password,
+                'HOST': url.hostname,
+                'PORT': url.port,
+            }
+        }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
