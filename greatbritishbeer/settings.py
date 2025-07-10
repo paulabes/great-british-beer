@@ -126,16 +126,22 @@ DATABASES = {
 }
 
 # Heroku PostgreSQL configuration
-# Override with PostgreSQL if DATABASE_URL is available
-if 'DATABASE_URL' in os.environ:
+# Try multiple environment variables for PostgreSQL
+database_url = (
+    os.environ.get('DATABASE_URL') or
+    os.environ.get('STACKHERO_POSTGRESQL_DATABASE_URL') or
+    os.environ.get('POSTGRES_URL')
+)
+
+if database_url:
     if dj_database_url:
         DATABASES = {
-            'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+            'default': dj_database_url.parse(database_url)
         }
     else:
         # Manual PostgreSQL configuration if dj_database_url is not available
         import urllib.parse as urlparse
-        url = urlparse.urlparse(os.environ['DATABASE_URL'])
+        url = urlparse.urlparse(database_url)
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
@@ -144,6 +150,9 @@ if 'DATABASE_URL' in os.environ:
                 'PASSWORD': url.password,
                 'HOST': url.hostname,
                 'PORT': url.port,
+                'OPTIONS': {
+                    'sslmode': 'require',
+                },
             }
         }
 
