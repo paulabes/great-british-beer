@@ -12,7 +12,19 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from decouple import config
+
+# Try to import required packages
+try:
+    from decouple import config
+except ImportError:
+    # Fallback if decouple is not available
+    def config(key, default=None, cast=None):
+        value = os.environ.get(key, default)
+        if cast and value is not None:
+            if cast == bool:
+                return value.lower() in ('true', '1', 'yes', 'on')
+            return cast(value)
+        return value
 
 # Try to import dj_database_url for Heroku
 try:
@@ -33,14 +45,17 @@ SECRET_KEY = config(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+# Temporarily enable DEBUG to see errors on Heroku
+DEBUG = config('DEBUG', default='False', cast=bool)
 
 ALLOWED_HOSTS = [
+    '*',  # Temporary for debugging
     '127.0.0.1',
     'localhost',
     'greatbritish.beer',
     'www.greatbritish.beer',
-    '.herokuapp.com'  # Allow all Heroku subdomains
+    'great-british-beer.herokuapp.com',  # Specific Heroku app URL
+    '.herokuapp.com',  # Allow all Heroku subdomains
 ]
 
 # Application definition
