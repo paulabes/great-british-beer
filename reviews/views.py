@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django import forms
 from .models import Beer, Review, Category, Brewery, ReviewLike, ReviewComment
-from .forms import ReviewForm, BeerSearchForm, CommentForm
+from .forms import ReviewForm, BeerSearchForm, CommentForm, BeerForm
 
 
 def beer_list(request):
@@ -265,3 +265,28 @@ def review_list(request):
         'total_reviews': reviews.count(),
     }
     return render(request, 'reviews/review_list.html', context)
+
+
+@login_required
+def beer_create(request):
+    """Create a new beer (restricted to staff users)"""
+    if not request.user.is_staff:
+        messages.error(request, 'You must be a staff member to add new beers.')
+        return redirect('reviews:beer_list')
+    
+    if request.method == 'POST':
+        form = BeerForm(request.POST, request.FILES)
+        if form.is_valid():
+            beer = form.save()
+            messages.success(
+                request, f'Beer "{beer.name}" has been added successfully!'
+            )
+            return redirect('reviews:beer_detail', slug=beer.slug)
+    else:
+        form = BeerForm()
+    
+    context = {
+        'form': form,
+        'title': 'Add New Beer'
+    }
+    return render(request, 'reviews/beer_form.html', context)

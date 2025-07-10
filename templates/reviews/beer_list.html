@@ -65,7 +65,7 @@
         <div class="col-md-9">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>Beers</h2>
-                {% if user.is_authenticated %}
+                {% if user.is_staff %}
                     <a href="{% url 'reviews:beer_create' %}" class="btn btn-primary">Add Beer</a>
                 {% endif %}
             </div>
@@ -145,7 +145,7 @@
             {% else %}
                 <div class="text-center">
                     <h4>No beers found</h4>
-                    <p>Try adjusting your search criteria or <a href="{% url 'reviews:beer_create' %}">add a new beer</a>.</p>
+                    <p>Try adjusting your search criteria{% if user.is_staff %} or <a href="{% url 'reviews:beer_create' %}">add a new beer</a>{% endif %}.</p>
                 </div>
             {% endif %}
         </div>
