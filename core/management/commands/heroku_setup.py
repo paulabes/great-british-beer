@@ -5,6 +5,7 @@ import sys
 
 User = get_user_model()
 
+
 class Command(BaseCommand):
     help = 'Setup Heroku database with migrations and sample data'
 
@@ -35,9 +36,13 @@ class Command(BaseCommand):
             call_command('setup_sample_data', verbosity=0)
             self.stdout.write(self.style.SUCCESS('✓ Sample data loaded'))
             
-            self.stdout.write(self.style.SUCCESS('🍺 Heroku setup completed successfully!'))
+            self.stdout.write(
+                self.style.SUCCESS('🍺 Heroku setup completed successfully!')
+            )
             self.stdout.write('You can now visit your app.')
             
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Error during setup: {str(e)}'))
+            self.stdout.write(
+                self.style.ERROR(f'❌ Error during setup: {str(e)}')
+            )
             sys.exit(1)
