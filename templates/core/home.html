@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Home - {{ site_name }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Great British Beer</h1>
+                <p class="lead mb-4">
+                    Discover, review, and rate the finest British ales, lagers, and craft beers. 
+                    Join our community of beer enthusiasts and share your tasting experiences.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Explore Beers
+                    </a>
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'users:register' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Join Us
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-beer-icon">
+                    <i class="fas fa-beer" style="font-size: 15rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Beer of the Month -->
+{% if beer_of_month %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Beer of the Month</h2>
+            <p class="text-muted">The highest-rated beer this month by our community</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if beer_of_month.image %}
+                                <img src="{{ beer_of_month.image.url }}" class="img-fluid rounded-start h-100 object-cover" alt="{{ beer_of_month.name }}">
+                            {% else %}
+                                <div class="bg-secondary d-flex align-items-center justify-content-center h-100 rounded-start">
+                                    <i class="bi bi-cup-hot text-white" style="font-size: 4rem;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">{{ beer_of_month.name }}</h5>
+                                <p class="text-muted mb-2">by {{ beer_of_month.brewery.name }}</p>
+                                <div class="mb-3">
+                                    {% with avg_rating=beer_of_month.get_average_rating %}
+                                        {% if avg_rating %}
+                                            <div class="d-flex align-items-center">
+                                                <div class="star-rating me-2">
+                                                    {% for i in "12345" %}
+                                                        {% if forloop.counter <= avg_rating %}
+                                                            <i class="bi bi-star-fill text-warning"></i>
+                                                        {% else %}
+                                                            <i class="bi bi-star text-warning"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <small class="text-muted">{{ avg_rating|floatformat:1 }} ({{ beer_of_month.get_review_count }} review{{ beer_of_month.get_review_count|pluralize }})</small>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <p class="card-text">{{ beer_of_month.description|truncatewords:30|safe }}</p>
+                                <a href="{{ beer_of_month.get_absolute_url }}" class="btn btn-primary">
+                                    <i class="bi bi-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Beers -->
+{% if featured_beers %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Featured Beers</h2>
+            <p class="text-muted">Top-rated beers loved by our community</p>
+        </div>
+        <div class="row">
+            {% for beer in featured_beers %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm beer-card">
+                        {% if beer.image %}
+                            <img src="{{ beer.image.url }}" class="card-img-top" alt="{{ beer.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-cup-hot text-white" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">{{ beer.name }}</h5>
+                            <p class="text-muted mb-2">{{ beer.brewery.name }}</p>
+                            <div class="mb-2">
+                                <span class="badge bg-primary">{{ beer.category.name }}</span>
+                                <span class="badge bg-secondary">{{ beer.abv }}% ABV</span>
+                            </div>
+                            {% if beer.avg_rating %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="star-rating me-2">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= beer.avg_rating %}
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            {% else %}
+                                                <i class="bi bi-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <small class="text-muted">{{ beer.avg_rating|floatformat:1 }} ({{ beer.review_count }})</small>
+                                </div>
+                            {% endif %}
+                            <p class="card-text flex-grow-1">{{ beer.description|truncatewords:15|safe }}</p>
+                            <div class="mt-auto">
+                                <a href="{{ beer.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-grid me-2"></i>View All Beers
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Latest Reviews -->
+{% if latest_reviews %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Latest Reviews</h2>
+            <p class="text-muted">Recent reviews from our beer community</p>
+        </div>
+        <div class="row">
+            {% for review in latest_reviews %}
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100 shadow-sm review-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                {% if review.user.avatar %}
+                                    <img src="{{ review.user.avatar.url }}" class="rounded-circle me-3" width="50" height="50" alt="{{ review.user.username }}">
+                                {% else %}
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-person text-white"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-bold">{{ review.title }}</h6>
+                                    <p class="text-muted small mb-1">
+                                        by <a href="{% url 'users:public_profile' review.user.username %}" class="text-decoration-none">{{ review.user.username }}</a>
+                                        • {{ review.created_at|naturaltime }}
+                                    </p>
+                                    <div class="star-rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="bi bi-star-fill text-warning small"></i>
+                                            {% else %}
+                                                <i class="bi bi-star text-warning small"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <h6 class="mb-2">
+                                <a href="{{ review.beer.get_absolute_url }}" class="text-decoration-none">
+                                    {{ review.beer.name }}
+                                </a>
+                                <small class="text-muted">by {{ review.beer.brewery.name }}</small>
+                            </h6>
+                            <p class="card-text">{{ review.content|truncatewords:20|safe }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{{ review.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye me-1"></i>Read Review
+                                </a>
+                                <div class="text-muted small">
+                                    <i class="bi bi-heart me-1"></i>{{ review.likes.count }}
+                                    <i class="bi bi-chat ms-2 me-1"></i>{{ review.comments.count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{% url 'reviews:review_list' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-journal-text me-2"></i>View All Reviews
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3">Join the Great British Beer Community</h2>
+        <p class="lead mb-4">Share your beer experiences, discover new favorites, and connect with fellow beer enthusiasts.</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            {% if user.is_authenticated %}
+                <a href="{% url 'reviews:review_create_new' %}" class="btn btn-light btn-lg">
+                    <i class="bi bi-pencil-square me-2"></i>Write Your First Review
+                </a>
+            {% else %}
+                <a href="{% url 'users:register' %}" class="btn btn-light btn-lg">
+                    <i class="bi bi-person-plus me-2"></i>Create Account
+                </a>
+                <a href="{% url 'users:login' %}" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

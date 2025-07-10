@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-4">Contact Us</h1>
+                <p class="lead text-muted">
+                    We'd love to hear from you. Get in touch with the Great British Beer team.
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="fw-bold mb-4">Send us a message</h3>
+                            <form>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <select class="form-select" id="subject" required>
+                                        <option value="">Choose a topic...</option>
+                                        <option value="general">General Inquiry</option>
+                                        <option value="review">Review Question</option>
+                                        <option value="brewery">Brewery Partnership</option>
+                                        <option value="technical">Technical Support</option>
+                                        <option value="feedback">Feedback</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" rows="5" required placeholder="Tell us how we can help you..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-send me-2"></i>Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-4">Get in Touch</h4>
+                            
+                            <div class="mb-4">
+                                <div class="d-flex align-items-start mb-3">
+                                    <i class="bi bi-envelope-fill text-primary me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Email</strong><br>
+                                        <a href="mailto:hello@greatbritish.beer" class="text-decoration-none">
+                                            hello@greatbritish.beer
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-3">
+                                    <i class="bi bi-clock-fill text-primary me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Response Time</strong><br>
+                                        Usually within 24 hours
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-3">
+                                    <i class="bi bi-geo-alt-fill text-primary me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Location</strong><br>
+                                        United Kingdom
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h5 class="fw-bold mb-3">Follow Us</h5>
+                            <div class="d-flex gap-3">
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-twitter"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-instagram"></i>
+                                </a>
+                            </div>
+
+                            <hr>
+
+                            <h5 class="fw-bold mb-3">Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <a href="{% url 'core:about' %}" class="text-decoration-none">
+                                        <i class="bi bi-arrow-right me-2"></i>About Us
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">
+                                        <i class="bi bi-arrow-right me-2"></i>FAQ
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">
+                                        <i class="bi bi-arrow-right me-2"></i>Privacy Policy
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">
+                                        <i class="bi bi-arrow-right me-2"></i>Terms of Service
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="mt-5">
+                <h2 class="fw-bold mb-4 text-center">Frequently Asked Questions</h2>
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do I submit a beer review?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                To submit a review, you need to create an account and log in. Then, find the beer you want to review and click "Write Review" or use the "Write Review" link in the navigation menu.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Are all reviews moderated?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, all reviews go through a moderation process to ensure quality and authenticity. Reviews are typically approved within 24 hours.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Can breweries partner with Great British Beer?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Absolutely! We welcome partnerships with British breweries. Please contact us using the form above with "Brewery Partnership" as the subject.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                How can I request a beer to be added to the database?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                If you can't find a beer in our database, please send us a message with the beer details and we'll add it for you. We're always looking to expand our collection.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

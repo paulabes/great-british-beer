@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Reviews - Great British Beer{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>All Reviews</h2>
+                    <p class="text-muted">{{ total_reviews }} review{{ total_reviews|pluralize }} from our community</p>
+                </div>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Write a Review
+                    </a>
+                {% endif %}
+            </div>
+            
+            {% if page_obj %}
+                <div class="row">
+                    {% for review in page_obj %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <!-- Beer info -->
+                                    <div class="d-flex align-items-center mb-3">
+                                        {% if review.beer.image %}
+                                            <img src="{{ review.beer.image.url }}" alt="{{ review.beer.name }}" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-beer text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0">
+                                                <a href="{% url 'reviews:beer_detail' review.beer.slug %}" class="text-decoration-none">
+                                                    {{ review.beer.name }}
+                                                </a>
+                                            </h6>
+                                            <small class="text-muted">{{ review.beer.brewery.name }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Rating -->
+                                    <div class="mb-2">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="ms-2">{{ review.rating }}/5</span>
+                                    </div>
+                                    
+                                    <!-- Review excerpt -->
+                                    <p class="card-text">{{ review.comment|truncatewords:20|striptags }}</p>
+                                    
+                                    <!-- Reviewer info -->
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            by {{ review.user.get_full_name|default:review.user.username }}
+                                        </small>
+                                        <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small class="text-muted">
+                                                <i class="fas fa-thumbs-up"></i> {{ review.likes.count }}
+                                                <i class="fas fa-comment ms-2"></i> {{ review.comments.count }}
+                                            </small>
+                                        </div>
+                                        <a href="{% url 'reviews:review_detail' review.pk %}" class="btn btn-sm btn-outline-primary">
+                                            Read More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <nav aria-label="Reviews pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                    <h4>No Reviews Yet</h4>
+                    <p class="text-muted">Be the first to write a review!</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary">Browse Beers to Review</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Login to Write Reviews</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

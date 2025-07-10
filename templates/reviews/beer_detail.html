@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ beer.name }} - Great British Beer{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if beer.image %}
+                            <img src="{{ beer.image.url }}" class="img-fluid rounded-start h-100" alt="{{ beer.name }}" style="object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center h-100">
+                                <i class="fas fa-beer fa-5x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h2 class="card-title">{{ beer.name }}</h2>
+                            <h5 class="text-muted">{{ beer.brewery.name }}</h5>
+                            <p class="text-muted">{{ beer.category.name }}</p>
+                            
+                            {% if beer.average_rating %}
+                                <div class="mb-3">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= beer.average_rating %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-warning"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ms-2">{{ beer.average_rating|floatformat:1 }} ({{ beer.review_count }} review{{ beer.review_count|pluralize }})</span>
+                                </div>
+                            {% endif %}
+                            
+                            <p class="card-text"><strong>ABV:</strong> {{ beer.abv }}%</p>
+                            <p class="card-text"><strong>IBU:</strong> {{ beer.ibu|default:"N/A" }}</p>
+                            <p class="card-text">{{ beer.description }}</p>
+                            
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'reviews:review_create' beer.slug %}" class="btn btn-primary">Write a Review</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-primary">Login to Review</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reviews Section -->
+            <div class="mt-4">
+                <h3>Reviews</h3>
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="card-title">{{ review.user.get_full_name|default:review.user.username }}</h6>
+                                        <div class="mb-2">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-warning"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <span class="ms-2">{{ review.rating }}/5</span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                
+                                <p class="card-text">{{ review.comment }}</p>
+                                
+                                {% if user.is_authenticated %}
+                                    <div class="d-flex align-items-center">
+                                        <button class="btn btn-sm btn-outline-primary me-2 like-btn" data-review-id="{{ review.id }}">
+                                            <i class="fas fa-thumbs-up"></i> Like ({{ review.likes_count }})
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary comment-btn" data-review-id="{{ review.id }}">
+                                            <i class="fas fa-comment"></i> Comment
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Comment form (initially hidden) -->
+                                    <div class="comment-form mt-3" id="comment-form-{{ review.id }}" style="display: none;">
+                                        <form method="post" action="{% url 'reviews:comment_create' review.id %}">
+                                            {% csrf_token %}
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="comment" placeholder="Add a comment..." required>
+                                                <button class="btn btn-outline-secondary" type="submit">Post</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Comments -->
+                                {% if review.comments.all %}
+                                    <div class="mt-3">
+                                        {% for comment in review.comments.all %}
+                                            <div class="border-start ps-3 mb-2">
+                                                <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                                                <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y" }}</small>
+                                                <p class="mb-0">{{ comment.comment }}</p>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <!-- Pagination for reviews -->
+                    {% if is_paginated %}
+                        <nav aria-label="Review pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+                                
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <p>No reviews yet. Be the first to review this beer!</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Brewery Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Brewery Info</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ beer.brewery.name }}</h6>
+                    {% if beer.brewery.description %}
+                        <p>{{ beer.brewery.description }}</p>
+                    {% endif %}
+                    {% if beer.brewery.location %}
+                        <p><strong>Location:</strong> {{ beer.brewery.location }}</p>
+                    {% endif %}
+                    {% if beer.brewery.website %}
+                        <a href="{{ beer.brewery.website }}" target="_blank" class="btn btn-sm btn-outline-primary">Visit Website</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Related Beers -->
+            {% if related_beers %}
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>More from {{ beer.brewery.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for related_beer in related_beers %}
+                            <div class="d-flex mb-2">
+                                {% if related_beer.image %}
+                                    <img src="{{ related_beer.image.url }}" alt="{{ related_beer.name }}" class="me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light me-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-beer text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0"><a href="{% url 'reviews:beer_detail' related_beer.slug %}">{{ related_beer.name }}</a></h6>
+                                    <small class="text-muted">{{ related_beer.category.name }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Like button functionality
+document.querySelectorAll('.like-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const reviewId = this.dataset.reviewId;
+        fetch(`/reviews/like/${reviewId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                this.innerHTML = `<i class="fas fa-thumbs-up"></i> Like (${data.likes_count})`;
+            }
+        });
+    });
+});
+
+// Comment button functionality
+document.querySelectorAll('.comment-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const reviewId = this.dataset.reviewId;
+        const commentForm = document.getElementById(`comment-form-${reviewId}`);
+        commentForm.style.display = commentForm.style.display === 'none' ? 'block' : 'none';
+    });
+});
+</script>
+{% endblock %}

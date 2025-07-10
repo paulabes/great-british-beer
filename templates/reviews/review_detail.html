@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Review by {{ review.user.get_full_name|default:review.user.username }} - Great British Beer{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Review Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2>Review of <a href="{% url 'reviews:beer_detail' review.beer.slug %}">{{ review.beer.name }}</a></h2>
+                            <p class="text-muted mb-0">by {{ review.user.get_full_name|default:review.user.username }}</p>
+                            <small class="text-muted">{{ review.created_at|date:"F d, Y" }}</small>
+                        </div>
+                        {% if review.beer.image %}
+                            <img src="{{ review.beer.image.url }}" alt="{{ review.beer.name }}" class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-beer fa-2x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Rating -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star text-warning"></i>
+                                {% else %}
+                                    <i class="far fa-star text-warning"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="ms-2 h5 mb-0">{{ review.rating }}/5</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Content -->
+                    <div class="review-content">
+                        {{ review.comment|safe }}
+                    </div>
+                    
+                    <!-- Review Actions -->
+                    {% if user.is_authenticated %}
+                        <div class="mt-4 d-flex align-items-center">
+                            <button class="btn btn-sm btn-outline-primary me-2 like-btn {% if user_liked %}liked{% endif %}" data-review-id="{{ review.id }}">
+                                <i class="fas fa-thumbs-up"></i> 
+                                <span class="like-text">{% if user_liked %}Liked{% else %}Like{% endif %}</span>
+                                (<span class="like-count">{{ like_count }}</span>)
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary comment-btn" data-bs-toggle="collapse" data-bs-target="#commentForm">
+                                <i class="fas fa-comment"></i> Add Comment
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="mt-4">
+                            <p class="text-muted">
+                                <a href="{% url 'login' %}">Login</a> to like and comment on this review.
+                            </p>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Comment Form -->
+                    {% if user.is_authenticated and comment_form %}
+                        <div class="collapse mt-3" id="commentForm">
+                            <div class="card card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="{{ comment_form.comment.id_for_label }}" class="form-label">Your Comment</label>
+                                        <textarea class="form-control" id="{{ comment_form.comment.id_for_label }}" name="comment" rows="3" placeholder="Share your thoughts..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Post Comment</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Comments Section -->
+            {% if comments %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Comments ({{ comments.count }})</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for comment in comments %}
+                            <div class="comment mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                                        <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y" }}</small>
+                                    </div>
+                                </div>
+                                <p class="mt-2 mb-0">{{ comment.comment }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center text-muted">
+                        <p>No comments yet. Be the first to comment!</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Beer Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">About This Beer</h6>
+                </div>
+                <div class="card-body">
+                    <h6>{{ review.beer.name }}</h6>
+                    <p class="text-muted mb-2">{{ review.beer.brewery.name }}</p>
+                    <p class="mb-2"><strong>Style:</strong> {{ review.beer.category.name }}</p>
+                    <p class="mb-2"><strong>ABV:</strong> {{ review.beer.abv }}%</p>
+                    {% if review.beer.ibu %}
+                        <p class="mb-2"><strong>IBU:</strong> {{ review.beer.ibu }}</p>
+                    {% endif %}
+                    <a href="{% url 'reviews:beer_detail' review.beer.slug %}" class="btn btn-sm btn-primary">View Beer Details</a>
+                </div>
+            </div>
+            
+            <!-- Reviewer Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">About the Reviewer</h6>
+                </div>
+                <div class="card-body text-center">
+                    {% if review.user.profile_picture %}
+                        <img src="{{ review.user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 80px; height: 80px;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                    {% endif %}
+                    <h6>{{ review.user.get_full_name|default:review.user.username }}</h6>
+                    {% if review.user.bio %}
+                        <p class="text-muted small">{{ review.user.bio|truncatewords:20 }}</p>
+                    {% endif %}
+                    <p class="small">
+                        <strong>{{ review.user.get_review_count }}</strong> review{{ review.user.get_review_count|pluralize }}
+                    </p>
+                    <a href="{% url 'users:profile' %}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                </div>
+            </div>
+            
+            <!-- Related Reviews -->
+            {% if review.beer.reviews.count > 1 %}
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Other Reviews of {{ review.beer.name }}</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for other_review in review.beer.reviews.all|slice:":3" %}
+                            {% if other_review.id != review.id %}
+                                <div class="d-flex mb-2">
+                                    <div class="me-2">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= other_review.rating %}
+                                                <i class="fas fa-star text-warning small"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-warning small"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small>
+                                            <strong>{{ other_review.user.get_full_name|default:other_review.user.username }}</strong><br>
+                                            {{ other_review.comment|truncatewords:10 }}
+                                        </small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <a href="{% url 'reviews:beer_detail' review.beer.slug %}" class="btn btn-sm btn-outline-primary">View All Reviews</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Like button functionality
+document.querySelectorAll('.like-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const reviewId = this.dataset.reviewId;
+        const likeText = this.querySelector('.like-text');
+        const likeCount = this.querySelector('.like-count');
+        
+        fetch(`{% url 'reviews:toggle_like' 0 %}`.replace('0', reviewId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.liked) {
+                    this.classList.add('liked');
+                    likeText.textContent = 'Liked';
+                } else {
+                    this.classList.remove('liked');
+                    likeText.textContent = 'Like';
+                }
+                likeCount.textContent = data.likes_count;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
+{% endblock %}
