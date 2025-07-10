@@ -49,12 +49,11 @@ SECRET_KEY = config(
 DEBUG = config('DEBUG', default='False', cast=bool)
 
 ALLOWED_HOSTS = [
-    '*',  # Temporary for debugging
     '127.0.0.1',
     'localhost',
     'greatbritish.beer',
     'www.greatbritish.beer',
-    'great-british-beer.herokuapp.com',  # Specific Heroku app URL
+    'great-british-beer.herokuapp.com',  # Your Heroku app URL
     '.herokuapp.com',  # Allow all Heroku subdomains
 ]
 
