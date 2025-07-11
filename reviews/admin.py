@@ -88,8 +88,8 @@ class BeerAdmin(admin.ModelAdmin):
         if avg:
             stars = '★' * int(avg) + '☆' * (5 - int(avg))
             return format_html(
-                '<span title="{:.1f}">{}</span>',
-                avg, stars
+                '<span title="{}">{}</span>',
+                f'{avg:.1f}', stars
             )
         return 'No ratings'
     average_rating.short_description = 'Avg Rating'
