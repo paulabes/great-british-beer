@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
+    // Form validation
+    initializeFormValidation();
+
     // Handle like buttons (AJAX)
     const likeButtons = document.querySelectorAll('.like-btn');
     likeButtons.forEach(button => {
@@ -271,4 +274,201 @@ function createToastContainer() {
     container.style.zIndex = '1100';
     document.body.appendChild(container);
     return container;
+}
+
+/**
+ * Initialize comprehensive form validation
+ */
+function initializeFormValidation() {
+    // Password strength validation
+    const passwordFields = document.querySelectorAll('input[type="password"]');
+    passwordFields.forEach(field => {
+        if (field.name === 'password1' || field.name === 'password') {
+            field.addEventListener('input', validatePasswordStrength);
+        }
+    });
+
+    // Email validation
+    const emailFields = document.querySelectorAll('input[type="email"]');
+    emailFields.forEach(field => {
+        field.addEventListener('blur', validateEmail);
+    });
+
+    // Password confirmation validation
+    const confirmPasswordField = document.querySelector('input[name="password2"]');
+    if (confirmPasswordField) {
+        confirmPasswordField.addEventListener('input', validatePasswordConfirmation);
+    }
+
+    // Real-time form validation
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!validateForm(this)) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            this.classList.add('was-validated');
+        });
+    });
+}
+
+/**
+ * Validate password strength
+ */
+function validatePasswordStrength(e) {
+    const password = e.target.value;
+    const feedback = getOrCreateFeedback(e.target, 'password-strength');
+    
+    if (password.length === 0) {
+        clearValidation(e.target, feedback);
+        return;
+    }
+
+    const strength = calculatePasswordStrength(password);
+    
+    if (strength.score < 3) {
+        setInvalid(e.target, feedback, strength.message);
+    } else {
+        setValid(e.target, feedback, 'Password strength: ' + strength.level);
+    }
+}
+
+/**
+ * Calculate password strength
+ */
+function calculatePasswordStrength(password) {
+    let score = 0;
+    let feedback = [];
+
+    // Length check
+    if (password.length >= 8) score++;
+    else feedback.push('at least 8 characters');
+
+    // Uppercase check
+    if (/[A-Z]/.test(password)) score++;
+    else feedback.push('uppercase letter');
+
+    // Lowercase check
+    if (/[a-z]/.test(password)) score++;
+    else feedback.push('lowercase letter');
+
+    // Number check
+    if (/\d/.test(password)) score++;
+    else feedback.push('number');
+
+    // Special character check
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+    else feedback.push('special character');
+
+    const levels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    const level = levels[Math.min(score, 4)];
+    
+    const message = score < 3 ? 
+        `Password needs: ${feedback.join(', ')}` : 
+        `Strong password`;
+
+    return { score, level, message };
+}
+
+/**
+ * Validate email format
+ */
+function validateEmail(e) {
+    const email = e.target.value;
+    const feedback = getOrCreateFeedback(e.target, 'email-validation');
+    
+    if (email.length === 0) {
+        clearValidation(e.target, feedback);
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!emailRegex.test(email)) {
+        setInvalid(e.target, feedback, 'Please enter a valid email address');
+    } else {
+        setValid(e.target, feedback, 'Valid email address');
+    }
+}
+
+/**
+ * Validate password confirmation
+ */
+function validatePasswordConfirmation(e) {
+    const confirmPassword = e.target.value;
+    const passwordField = document.querySelector('input[name="password1"]') || 
+                         document.querySelector('input[name="password"]');
+    const feedback = getOrCreateFeedback(e.target, 'password-confirmation');
+    
+    if (confirmPassword.length === 0) {
+        clearValidation(e.target, feedback);
+        return;
+    }
+
+    if (!passwordField || confirmPassword !== passwordField.value) {
+        setInvalid(e.target, feedback, 'Passwords do not match');
+    } else {
+        setValid(e.target, feedback, 'Passwords match');
+    }
+}
+
+/**
+ * Validate entire form
+ */
+function validateForm(form) {
+    let isValid = true;
+    const requiredFields = form.querySelectorAll('[required]');
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            const feedback = getOrCreateFeedback(field, 'required-validation');
+            setInvalid(field, feedback, 'This field is required');
+            isValid = false;
+        }
+    });
+
+    return isValid;
+}
+
+/**
+ * Get or create feedback element
+ */
+function getOrCreateFeedback(field, className) {
+    let feedback = field.parentNode.querySelector(`.${className}`);
+    if (!feedback) {
+        feedback = document.createElement('div');
+        feedback.className = `invalid-feedback ${className}`;
+        field.parentNode.appendChild(feedback);
+    }
+    return feedback;
+}
+
+/**
+ * Set field as invalid
+ */
+function setInvalid(field, feedback, message) {
+    field.classList.remove('is-valid');
+    field.classList.add('is-invalid');
+    feedback.textContent = message;
+    feedback.style.display = 'block';
+}
+
+/**
+ * Set field as valid
+ */
+function setValid(field, feedback, message) {
+    field.classList.remove('is-invalid');
+    field.classList.add('is-valid');
+    feedback.textContent = message;
+    feedback.className = feedback.className.replace('invalid-feedback', 'valid-feedback');
+    feedback.style.display = 'block';
+}
+
+/**
+ * Clear validation state
+ */
+function clearValidation(field, feedback) {
+    field.classList.remove('is-valid', 'is-invalid');
+    feedback.style.display = 'none';
 }

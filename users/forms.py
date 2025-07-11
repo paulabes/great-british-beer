@@ -9,19 +9,32 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
         help_text="Required. Enter a valid email address.",
-        widget=forms.EmailInput(attrs={'class': 'form-control'})
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your email address',
+            'required': True,
+            'autocomplete': 'email'
+        })
     )
     first_name = forms.CharField(
         max_length=30,
         required=False,
         help_text="Optional.",
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your first name',
+            'autocomplete': 'given-name'
+        })
     )
     last_name = forms.CharField(
         max_length=30,
         required=False,
         help_text="Optional.",
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your last name',
+            'autocomplete': 'family-name'
+        })
     )
 
     class Meta:
@@ -31,20 +44,34 @@ class CustomUserCreationForm(UserCreationForm):
             'last_name', 'password1', 'password2'
         )
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Choose a username',
+                'required': True,
+                'autocomplete': 'username'
+            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update(
-            {'class': 'form-control'}
-        )
-        self.fields['password1'].widget.attrs.update(
-            {'class': 'form-control'}
-        )
-        self.fields['password2'].widget.attrs.update(
-            {'class': 'form-control'}
-        )
+        self.fields['username'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Choose a username',
+            'required': True,
+            'autocomplete': 'username'
+        })
+        self.fields['password1'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Enter your password',
+            'required': True,
+            'autocomplete': 'new-password'
+        })
+        self.fields['password2'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Confirm your password',
+            'required': True,
+            'autocomplete': 'new-password'
+        })
 
     def clean_email(self):
         """Validate email uniqueness."""

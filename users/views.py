@@ -1,19 +1,27 @@
+from typing import Optional
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Avg
+from django.http import HttpRequest, HttpResponse
 from .forms import CustomUserCreationForm, UserUpdateForm
 from .models import User
 from reviews.models import Review
 
 
-def register(request):
+def register(request: HttpRequest) -> HttpResponse:
     """User registration view.
     
     Handles GET and POST requests for user registration.
     On successful registration, redirects to login page.
+    
+    Args:
+        request: The HTTP request object
+        
+    Returns:
+        HttpResponse: Rendered registration page or redirect
     """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -29,11 +37,17 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
-def user_login(request):
+def user_login(request: HttpRequest) -> HttpResponse:
     """User login view.
     
     Handles email-based authentication for users.
     On successful login, redirects to home or next URL.
+    
+    Args:
+        request: The HTTP request object
+        
+    Returns:
+        HttpResponse: Rendered login page or redirect to home/next URL
     """
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
@@ -102,7 +116,11 @@ def profile(request):
 def edit_profile(request):
     """Edit user profile view"""
     if request.method == 'POST':
-        form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
+        form = UserUpdateForm(
+            request.POST,
+            request.FILES,
+            instance=request.user
+        )
         if form.is_valid():
             form.save()
             messages.success(request, 'Your profile has been updated!')

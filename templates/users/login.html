@@ -1,5 +1,14 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %}                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="Enter your email address"
+                                   required 
+                                   autocomplete="email"
+                                   value="{{ form.email.value|default:'' }}">
+                        </div> load static %}
 
 {% block title %}Login - Great British Beer{% endblock %}
 
@@ -30,7 +39,13 @@
                         
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Enter your password"
+                                   required 
+                                   autocomplete="current-password">
                         </div>
                         
                         <div class="d-grid">
