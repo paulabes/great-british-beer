@@ -124,36 +124,21 @@ DATABASES = {
     }
 }
 
-# Heroku PostgreSQL configuration
-# Try multiple environment variables for PostgreSQL
-database_url = (
-    os.environ.get('DATABASE_URL') or
-    os.environ.get('STACKHERO_POSTGRESQL_DATABASE_URL') or
-    os.environ.get('POSTGRES_URL')
-)
+# Check for Heroku PostgreSQL database
+database_url = os.environ.get('DATABASE_URL', '').strip()
 
-if database_url:
-    if dj_database_url:
-        DATABASES = {
-            'default': dj_database_url.parse(database_url)
-        }
-    else:
-        # Manual PostgreSQL configuration if dj_database_url is not available
-        import urllib.parse as urlparse
-        url = urlparse.urlparse(database_url)
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': url.path[1:],
-                'USER': url.username,
-                'PASSWORD': url.password,
-                'HOST': url.hostname,
-                'PORT': url.port,
-                'OPTIONS': {
-                    'sslmode': 'require',
-                },
-            }
-        }
+# Only use PostgreSQL if we have a valid, non-empty DATABASE_URL
+if database_url and len(database_url) > 10 and not database_url.startswith('sqlite'):
+    try:
+        import dj_database_url
+        parsed_db = dj_database_url.parse(database_url)
+        if parsed_db and parsed_db.get('ENGINE'):
+            DATABASES = {'default': parsed_db}
+        else:
+            print("⚠ DATABASE_URL parsing failed, using SQLite")
+    except Exception as e:
+        print(f"⚠ Database configuration error: {e}")
+        print("⚠ Falling back to SQLite database")
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
