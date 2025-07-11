@@ -45,8 +45,8 @@ SECRET_KEY = config(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Temporarily enable DEBUG to see errors on Heroku
-DEBUG = config('DEBUG', default='False', cast=bool)
+# Enable DEBUG for local development, disable for production
+DEBUG = config('DEBUG', default='True', cast=bool)
 
 ALLOWED_HOSTS = [
     '127.0.0.1',

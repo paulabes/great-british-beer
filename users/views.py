@@ -1,21 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Avg, Count
-from .forms import CustomUserCreationForm, UserUpdateForm, LoginForm
+from django.db.models import Avg
+from .forms import CustomUserCreationForm, UserUpdateForm
 from .models import User
 from reviews.models import Review
 
 
 def register(request):
-    """User registration view"""
+    """User registration view.
+    
+    Handles GET and POST requests for user registration.
+    On successful registration, redirects to login page.
+    """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            messages.success(request, 'Registration successful! You can now log in.')
+            form.save()
+            messages.success(
+                request,
+                'Registration successful! You can now log in.'
+            )
             return redirect('users:login')
     else:
         form = CustomUserCreationForm()
@@ -23,25 +30,37 @@ def register(request):
 
 
 def user_login(request):
-    """User login view"""
+    """User login view.
+    
+    Handles email-based authentication for users.
+    On successful login, redirects to home or next URL.
+    """
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+
+        if email and password:
             try:
-                user = User.objects.get(email=email)
-                user = authenticate(request, username=user.username, password=password)
-                if user:
-                    login(request, user)
-                    messages.success(request, f'Welcome back, {user.username}!')
+                user_obj = User.objects.get(email=email)
+                if user_obj.check_password(password) and user_obj.is_active:
+                    login(request, user_obj)
+                    messages.success(
+                        request,
+                        f'Welcome back, {user_obj.username}!'
+                    )
                     next_url = request.GET.get('next', 'core:home')
                     return redirect(next_url)
+                else:
+                    messages.error(request, 'Invalid credentials.')
             except User.DoesNotExist:
-                form.add_error(None, 'Invalid email or password.')
-    else:
-        form = LoginForm()
-    return render(request, 'users/login.html', {'form': form})
+                messages.error(request, 'Invalid credentials.')
+        else:
+            messages.error(
+                request,
+                'Please enter both email and password.'
+            )
+    
+    return render(request, 'users/login.html')
 
 
 def user_logout(request):
