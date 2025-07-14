@@ -116,13 +116,9 @@ WSGI_APPLICATION = 'greatbritishbeer.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# Default SQLite database for development
-import dj_database_url
-import os
-
 DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
 
-if DATABASE_URL:
+if DATABASE_URL and dj_database_url:
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL)
     }
