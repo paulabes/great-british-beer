@@ -120,51 +120,19 @@ WSGI_APPLICATION = 'greatbritishbeer.wsgi.application'
 import dj_database_url
 import os
 
-DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
-}
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Heroku PostgreSQL configuration with enhanced detection
-database_url = (
-    os.environ.get('DATABASE_URL') or
-    os.environ.get('HEROKU_POSTGRESQL_BRONZE_URL') or
-    os.environ.get('HEROKU_POSTGRESQL_COPPER_URL') or
-    os.environ.get('HEROKU_POSTGRESQL_CRIMSON_URL')
-)
-
-# Debug: Show what we found
-print(f"DATABASE_URL found: {bool(database_url)}")
-if database_url:
-    print(f"DATABASE_URL starts with: {database_url[:25]}...")
-
-# Only use PostgreSQL if we have a valid, non-empty DATABASE_URL
-if database_url and database_url.strip() and len(database_url) > 10:
-    database_url = database_url.strip()
-    
-    # Check if it's actually a PostgreSQL URL
-    if any(db_type in database_url.lower() for db_type in ['postgres', 'postgresql']):
-        try:
-            if dj_database_url:
-                parsed_db = dj_database_url.parse(database_url)
-                
-                # Validate the parsed configuration
-                if parsed_db and parsed_db.get('ENGINE') and parsed_db.get('NAME'):
-                    DATABASES = {'default': parsed_db}
-                    print(f"✓ Successfully configured PostgreSQL database")
-                    print(f"✓ Engine: {parsed_db.get('ENGINE')}")
-                    print(f"✓ Host: {parsed_db.get('HOST', 'localhost')}")
-                else:
-                    print("⚠ DATABASE_URL parsing failed - invalid configuration")
-            else:
-                print("⚠ dj_database_url not available")
-                
-        except Exception as e:
-            print(f"⚠ Database configuration error: {e}")
-            print(f"⚠ DATABASE_URL: {database_url[:50]}...")
-    else:
-        print(f"⚠ DATABASE_URL is not PostgreSQL: {database_url[:30]}...")
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
+    }
 else:
-    print("ℹ No valid DATABASE_URL found, using SQLite for development")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
