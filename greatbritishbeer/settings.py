@@ -120,7 +120,7 @@ WSGI_APPLICATION = 'greatbritishbeer.wsgi.application'
 import dj_database_url
 import os
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
 
 if DATABASE_URL:
     DATABASES = {
