@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Avg, Count
+from django.db.models import Q, Avg, Count, Case, When, Value, IntegerField
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django import forms
@@ -70,7 +70,7 @@ def beer_list(request):
 
 def beer_detail(request, slug):
     """Detailed view of a single beer"""
-    beer = get_object_or_404(Beer, slug=slug)
+    beer = get_object_or_404(Beer.objects.select_related('brewery', 'category'), slug=slug)
     reviews = Review.objects.filter(
         beer=beer, is_approved=True
     ).select_related('user').order_by('-created_at')
@@ -80,19 +80,32 @@ def beer_detail(request, slug):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
+    # Calculate statistics in one query
+    aggregates = reviews.aggregate(
+        avg_rating=Avg('rating'),
+        total_reviews=Count('id'),
+        star_1=Count(Case(When(rating=1, then=1), output_field=IntegerField())),
+        star_2=Count(Case(When(rating=2, then=1), output_field=IntegerField())),
+        star_3=Count(Case(When(rating=3, then=1), output_field=IntegerField())),
+        star_4=Count(Case(When(rating=4, then=1), output_field=IntegerField())),
+        star_5=Count(Case(When(rating=5, then=1), output_field=IntegerField())),
+    )
+
+    total_reviews = aggregates['total_reviews']
+
     # Statistics
     stats = {
-        'avg_rating': beer.get_average_rating(),
-        'total_reviews': beer.get_review_count(),
+        'avg_rating': aggregates['avg_rating'],
+        'total_reviews': total_reviews,
         'rating_distribution': {},
     }
     
     # Calculate rating distribution
     for i in range(1, 6):
-        count = reviews.filter(rating=i).count()
+        count = aggregates[f'star_{i}']
         stats['rating_distribution'][i] = {
             'count': count,
-            'percentage': (count / reviews.count() * 100) if reviews.count() > 0 else 0
+            'percentage': (count / total_reviews * 100) if total_reviews > 0 else 0
         }
     
     # Check if user has already reviewed this beer
