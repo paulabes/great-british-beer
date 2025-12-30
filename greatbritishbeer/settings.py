@@ -53,8 +53,8 @@ ALLOWED_HOSTS = [
     'localhost',
     'greatbritish.beer',
     'www.greatbritish.beer',
-    'great-british-beer.herokuapp.com',  # Your Heroku app URL
-    '.herokuapp.com',  # Allow all Heroku subdomains
+    '.railway.app',  # Railway deployment
+    '.up.railway.app',  # Railway custom domains
 ]
 
 # Application definition
