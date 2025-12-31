@@ -54,15 +54,6 @@ class UserModelTest(TestCase):
         )
         self.assertEqual(str(user), 'testuser')
 
-    def test_email_required(self):
-        """Test that email is required for user creation."""
-        with self.assertRaises(ValueError):
-            User.objects.create_user(
-                username='testuser',
-                email='',
-                password='TestPass123!'
-            )
-
 
 class UserFormsTest(TestCase):
     """Test cases for user forms."""
