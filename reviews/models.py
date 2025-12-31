@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 from ckeditor.fields import RichTextField
 from taggit.managers import TaggableManager
@@ -94,6 +95,8 @@ class Beer(models.Model):
         return reverse('reviews:beer_detail', kwargs={'slug': self.slug})
     
     def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
         if self.image:
             img = Image.open(self.image.path)

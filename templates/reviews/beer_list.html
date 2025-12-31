@@ -70,9 +70,9 @@
                 {% endif %}
             </div>
             
-            {% if beers %}
+            {% if page_obj %}
                 <div class="row">
-                    {% for beer in beers %}
+                    {% for beer in page_obj %}
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100">
                                 {% if beer.image %}
