@@ -115,21 +115,9 @@ WSGI_APPLICATION = 'greatbritishbeer.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Note: Railway's DATABASE_URL already uses the private endpoint (postgres.railway.internal)
 
-# Use private endpoint to avoid Railway egress fees
-# Construct private URL from individual PostgreSQL variables instead of DATABASE_URL
-if all([os.environ.get('PGUSER'), os.environ.get('PGPASSWORD'),
-        os.environ.get('PGHOST'), os.environ.get('PGDATABASE')]):
-    # Build connection URL using private endpoint (PGHOST = internal hostname)
-    pg_user = os.environ.get('PGUSER')
-    pg_password = os.environ.get('PGPASSWORD')
-    pg_host = os.environ.get('PGHOST')
-    pg_port = os.environ.get('PGPORT', '5432')
-    pg_database = os.environ.get('PGDATABASE')
-    DATABASE_URL = f'postgresql://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}'
-else:
-    # Fallback to DATABASE_URL for local development
-    DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
 
 if DATABASE_URL and dj_database_url:
     DATABASES = {
