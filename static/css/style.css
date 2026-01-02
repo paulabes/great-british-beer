@@ -210,6 +210,37 @@ body {
     }
 }
 
+/* Hero Image Grid - 3 Images Layout */
+.hero-image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-image-main {
+    grid-column: 1 / -1;
+    animation-delay: 0.2s;
+}
+
+.hero-image-secondary {
+    animation-delay: 0.4s;
+}
+
+.hero-image-secondary img {
+    transform: rotate(3deg);
+}
+
+.hero-image-tertiary {
+    animation-delay: 0.6s;
+}
+
+.hero-image-tertiary img {
+    transform: rotate(-3deg);
+}
+
 .hero-section h1 {
     font-family: var(--font-display);
     font-size: clamp(3.5rem, 10vw, 7.5rem);

@@ -31,17 +31,29 @@
                         Explore Beers
                     </a>
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'users:register' %}" class="btn btn-outline-light btn-lg">
+                        <a href="{% url 'users:register' %}" class="btn btn-light btn-lg">
                             Join Community
                         </a>
                     {% endif %}
                 </div>
             </div>
             <div class="col-lg-5 d-none d-lg-block">
-                <div class="hero-beer-image">
-                    <img src="https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=800&h=600&fit=crop"
-                         alt="Autumn Amber Ale"
-                         class="img-fluid">
+                <div class="hero-image-grid">
+                    <div class="hero-beer-image hero-image-main">
+                        <img src="https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=800&h=600&fit=crop"
+                             alt="Autumn Amber Ale"
+                             class="img-fluid">
+                    </div>
+                    <div class="hero-beer-image hero-image-secondary">
+                        <img src="https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=400&h=300&fit=crop"
+                             alt="Copper Harvest IPA"
+                             class="img-fluid">
+                    </div>
+                    <div class="hero-beer-image hero-image-tertiary">
+                        <img src="https://images.unsplash.com/photo-1618183479302-1e0aa382c36b?w=400&h=300&fit=crop"
+                             alt="Golden Wheat Lager"
+                             class="img-fluid">
+                    </div>
                 </div>
             </div>
         </div>
