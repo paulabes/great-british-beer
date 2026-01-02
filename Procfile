@@ -1,2 +1,2 @@
-web: gunicorn greatbritishbeer.wsgi:application --log-file -
-release: python manage.py migrate --noinput
+web: echo "Running migrations..." && python manage.py migrate --noinput -v 2 && echo "Migrations complete!" && gunicorn greatbritishbeer.wsgi:application --log-file -
+release: python manage.py migrate --noinput -v 2
