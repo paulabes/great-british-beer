@@ -257,6 +257,14 @@ body {
     border: none;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     font-size: 0.875rem;
+    display: inline-block;
+    width: auto;
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 0.875rem;
+    border-radius: 50px;
 }
 
 .btn-sm {

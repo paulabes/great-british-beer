@@ -4,21 +4,28 @@
 {% block title %}All Reviews - Great British Beer{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2>All Reviews</h2>
-                    <p class="text-muted">{{ total_reviews }} review{{ total_reviews|pluralize }} from our community</p>
-                </div>
+<!-- Hero Header for Reviews -->
+<section class="py-5" style="background: linear-gradient(135deg, #cc8800 0%, #3e2723 100%); position: relative; overflow: hidden;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-3 fw-bold mb-3" style="color: #ffffff; font-family: var(--font-display); font-style: italic; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">All Reviews</h1>
+                <p class="lead mb-0" style="color: rgba(255, 255, 255, 0.95); font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);">{{ total_reviews }} review{{ total_reviews|pluralize }} from our community</p>
+            </div>
+            <div class="col-lg-4 text-end">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Write a Review
+                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Write Review
                     </a>
                 {% endif %}
             </div>
-            
+        </div>
+    </div>
+</section>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
             {% if page_obj %}
                 <div class="row">
                     {% for review in page_obj %}
@@ -43,7 +50,7 @@
                                             <small class="text-muted">{{ review.beer.brewery.name }}</small>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Rating -->
                                     <div class="mb-2">
                                         {% for i in "12345" %}
@@ -55,10 +62,10 @@
                                         {% endfor %}
                                         <span class="ms-2">{{ review.rating }}/5</span>
                                     </div>
-                                    
+
                                     <!-- Review excerpt -->
                                     <p class="card-text">{{ review.comment|truncatewords:20|striptags }}</p>
-                                    
+
                                     <!-- Reviewer info -->
                                     <div class="d-flex justify-content-between align-items-center">
                                         <small class="text-muted">
@@ -67,7 +74,7 @@
                                         <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
                                     </div>
                                 </div>
-                                
+
                                 <div class="card-footer bg-transparent">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
@@ -76,7 +83,7 @@
                                                 <i class="fas fa-comment ms-2"></i> {{ review.comments.count }}
                                             </small>
                                         </div>
-                                        <a href="{% url 'reviews:review_detail' review.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <a href="{% url 'reviews:review_detail' review.pk %}" class="btn btn-outline-primary btn-lg">
                                             Read More
                                         </a>
                                     </div>
@@ -85,7 +92,7 @@
                         </div>
                     {% endfor %}
                 </div>
-                
+
                 <!-- Pagination -->
                 {% if page_obj.has_other_pages %}
                     <nav aria-label="Reviews pagination" class="mt-4">
@@ -98,7 +105,7 @@
                                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
                                 </li>
                             {% endif %}
-                            
+
                             {% for num in page_obj.paginator.page_range %}
                                 {% if page_obj.number == num %}
                                     <li class="page-item active">
@@ -110,7 +117,7 @@
                                     </li>
                                 {% endif %}
                             {% endfor %}
-                            
+
                             {% if page_obj.has_next %}
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
@@ -128,9 +135,9 @@
                     <h4>No Reviews Yet</h4>
                     <p class="text-muted">Be the first to write a review!</p>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary">Browse Beers to Review</a>
+                        <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg">Browse Beers to Review</a>
                     {% else %}
-                        <a href="{% url 'users:login' %}" class="btn btn-primary">Login to Write Reviews</a>
+                        <a href="{% url 'users:login' %}" class="btn btn-primary btn-lg">Login to Write Reviews</a>
                     {% endif %}
                 </div>
             {% endif %}
