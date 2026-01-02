@@ -229,6 +229,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 # Security settings for production
 if not DEBUG:
+    # Trust Railway's proxy headers for HTTPS detection
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
