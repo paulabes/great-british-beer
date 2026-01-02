@@ -49,11 +49,26 @@ def contact(request):
     return render(request, 'core/contact.html')
 
 
-@staff_member_required
 def populate_database(request):
-    """Populate database with dummy data - staff only"""
+    """Populate database with dummy data - requires secret parameter"""
+    # Simple protection with a secret parameter
+    secret = request.GET.get('secret', '')
+    if secret != 'populate2026':
+        return HttpResponse('Unauthorized', status=401)
+
     try:
         call_command('populate_db')
-        return HttpResponse('Database populated successfully! You can now browse the site.')
+        return HttpResponse('''
+            <h1>Database populated successfully!</h1>
+            <p>The Railway database has been populated with:</p>
+            <ul>
+                <li>8 test users (password: password123)</li>
+                <li>10 beer categories</li>
+                <li>15 British breweries</li>
+                <li>25 beers</li>
+                <li>35 reviews with ratings and likes</li>
+            </ul>
+            <p><a href="/">Go to homepage</a></p>
+        ''')
     except Exception as e:
-        return HttpResponse(f'Error populating database: {str(e)}', status=500)
+        return HttpResponse(f'<h1>Error populating database</h1><pre>{str(e)}</pre>', status=500)
