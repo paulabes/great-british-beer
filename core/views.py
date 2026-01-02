@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Avg, Count
 from django.utils import timezone
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse
+from django.core.management import call_command
 from reviews.models import Beer, Review
 
 
@@ -44,3 +47,13 @@ def about(request):
 def contact(request):
     """Contact page view"""
     return render(request, 'core/contact.html')
+
+
+@staff_member_required
+def populate_database(request):
+    """Populate database with dummy data - staff only"""
+    try:
+        call_command('populate_db')
+        return HttpResponse('Database populated successfully! You can now browse the site.')
+    except Exception as e:
+        return HttpResponse(f'Error populating database: {str(e)}', status=500)

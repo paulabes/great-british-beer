@@ -1,499 +1,641 @@
-/* Great British Beer - Custom Styles */
+/* Great British Beer - Modern Premium Edition */
+/* Inspired by aura.build & webflow - sophisticated, clean, premium */
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-    /* Union Jack Palette */
-    --union-blue: #012169;
-    --union-red: #C8102E;
-    --union-white: #FFFFFF;
+    /* Sophisticated Modern Palette */
+    --deep-forest: #1a3a2e;
+    --warm-terracotta: #d4573b;
+    --rich-amber: #e8a75d;
+    --soft-cream: #faf8f5;
+    --warm-sand: #f4ede4;
+    --charcoal: #2d2d2d;
+    --slate: #4a5568;
+    --gold-accent: #c9a961;
+    --deep-plum: #4a1942;
+    --burnt-sienna: #b85c38;
 
-    /* Semantic Colors */
-    --primary-color: var(--union-blue);
-    --secondary-color: var(--union-red);
-    --accent-color: #D4AF37; /* Metallic Gold for beer/premium feel */
-
-    --success-color: #2e7d32;
-    --warning-color: #ff8f00;
-    --info-color: #0288d1;
-    --error-color: #d32f2f;
-    --valid-color: #388e3c;
-
-    /* Layout Colors (Light Mode) */
-    --light-color: #F8F9FA;
-    --dark-color: #012169; /* Using Blue as the new dark */
-    --text-dark: #1A1A1A;
-    --text-light: #666666;
-    --bg-light: #FFFFFF;
-    --bg-contrast: #F5F5F5;
-
-    /* Fonts */
-    --font-heading: 'UnifrakturMaguntia', cursive;
-    --font-body: 'Inter', sans-serif;
+    /* Typography */
+    --font-display: 'Instrument Serif', serif;
+    --font-body: 'DM Sans', sans-serif;
 }
 
-/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: var(--font-body);
-    line-height: 1.6;
-    color: var(--text-dark);
-    background-color: var(--bg-light);
+    background: var(--soft-cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6, .navbar-brand {
-    font-family: var(--font-heading);
-    color: var(--primary-color);
-    letter-spacing: 0.5px;
-}
-
-/* Navbar */
+/* Navigation - Modern, Right-Aligned */
 .navbar {
-    background-color: var(--union-blue) !important;
-    border-bottom: 4px solid var(--union-red);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background: rgba(250, 248, 245, 0.98) !important;
+    backdrop-filter: blur(20px);
+    border: none !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+    padding: 0 !important;
 }
+
+.navbar .container {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+/* Remove the top bar - auth is now above nav */
 
 .navbar-brand {
-    font-size: 1.8rem;
-    color: var(--union-white) !important;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    font-family: var(--font-display);
+    font-size: 1.5rem !important;
+    font-weight: 400;
+    color: var(--charcoal) !important;
+    letter-spacing: -0.01em;
+    position: relative;
+    z-index: 10;
+    font-style: italic;
+}
+
+.navbar-collapse {
+    justify-content: flex-end;
+}
+
+.navbar-nav {
+    align-items: center;
 }
 
 .nav-link {
     font-family: var(--font-body);
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9) !important;
-    transition: all 0.3s ease;
+    color: var(--slate) !important;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    transition: all 0.3s;
+    padding: 0.5rem 1.25rem !important;
 }
 
 .nav-link:hover {
-    color: var(--union-white) !important;
-    transform: translateY(-1px);
+    color: var(--warm-terracotta) !important;
 }
 
-/* Form validation styles */
-.form-control.is-valid {
-    border-color: var(--valid-color);
-    box-shadow: 0 0 0 0.2rem rgba(56, 142, 60, 0.25);
-}
-
-.form-control.is-invalid {
-    border-color: var(--error-color);
-    box-shadow: 0 0 0 0.2rem rgba(211, 47, 47, 0.25);
-}
-
-.valid-feedback {
-    color: var(--valid-color);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.invalid-feedback {
-    color: var(--error-color);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Password strength indicator */
-.password-strength {
-    margin-top: 0.5rem;
-}
-
-.password-strength .progress {
-    height: 4px;
-    border-radius: 2px;
-}
-
-.password-strength-very-weak .progress-bar { background-color: var(--error-color); }
-.password-strength-weak .progress-bar { background-color: var(--warning-color); }
-.password-strength-fair .progress-bar { background-color: var(--accent-color); }
-.password-strength-good .progress-bar { background-color: var(--success-color); }
-.password-strength-strong .progress-bar { background-color: #1b5e20; }
-
-/* Loading states */
-.loading {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Form focus improvements */
-.form-control {
-    border-radius: 4px;
-    border: 1px solid #e0e0e0;
-    padding: 0.75rem 1rem;
-}
-
-.form-control:focus {
-    border-color: var(--union-blue);
-    box-shadow: 0 0 0 0.2rem rgba(1, 33, 105, 0.15);
-}
-
-/* Custom button styles */
-.btn {
-    font-family: var(--font-body);
-    font-weight: 600;
-    padding: 0.6rem 1.5rem;
-    border-radius: 2px; /* Sharper edges for high-end feel */
+/* Auth Links Styling */
+.navbar-nav .nav-item:last-child .nav-link,
+.navbar-nav .dropdown {
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
+    letter-spacing: 0.05em;
+    font-weight: 600;
 }
 
-.btn-primary {
-    background-color: var(--union-blue);
-    border-color: var(--union-blue);
-    color: var(--union-white);
-}
-
-.btn-primary:hover {
-    background-color: #001a53;
-    border-color: #001a53;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.btn-warning, .btn-secondary {
-    background-color: var(--union-red);
-    border-color: var(--union-red);
-    color: var(--union-white);
-}
-
-.btn-warning:hover, .btn-secondary:hover {
-    background-color: #a50d26;
-    border-color: #a50d26;
-    color: var(--union-white);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-/* Hero section */
+/* Hero - Deep Vibrant Beer Colors Cross-fade */
 .hero-section {
-    background: linear-gradient(135deg, var(--union-blue) 0%, #022a80 100%);
-    min-height: 60vh;
+    min-height: 85vh;
+    background: linear-gradient(135deg, #cc8800 0%, #3e2723 100%);
+    position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
-    border-bottom: 8px solid var(--union-red);
+    border: none !important;
+}
+
+/* Hero Button Animations */
+.hero-section .btn {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
     position: relative;
     overflow: hidden;
 }
 
+.hero-section .btn:nth-child(1) {
+    animation-delay: 0.3s;
+}
+
+.hero-section .btn:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Active pulse effect for hero buttons */
+.hero-section .btn-light {
+    box-shadow: 0 4px 14px rgba(250, 248, 245, 0.3), 0 0 0 0 rgba(250, 248, 245, 0.7);
+    animation: fadeInUp 0.8s ease-out forwards, pulse 2s infinite 1.5s;
+}
+
+.hero-section .btn-light:hover {
+    animation: none;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(250, 248, 245, 0.5);
+}
+
+.hero-section .btn-outline-light:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(250, 248, 245, 0.3);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 14px rgba(250, 248, 245, 0.3), 0 0 0 0 rgba(250, 248, 245, 0.7);
+    }
+    50% {
+        box-shadow: 0 4px 14px rgba(250, 248, 245, 0.3), 0 0 0 10px rgba(250, 248, 245, 0);
+    }
+    100% {
+        box-shadow: 0 4px 14px rgba(250, 248, 245, 0.3), 0 0 0 0 rgba(250, 248, 245, 0);
+    }
+}
+
+/* Shimmer effect on hover */
+.hero-section .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.hero-section .btn:hover::before {
+    left: 100%;
+}
+
 .hero-section h1 {
-    color: var(--union-white);
-    font-size: 3.5rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 10vw, 7.5rem);
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    position: relative;
+    z-index: 2;
+    font-style: italic;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-section p {
-    color: rgba(255,255,255,0.9);
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 400;
+    line-height: 1.7;
+    max-width: 560px;
+    position: relative;
+    z-index: 2;
+    letter-spacing: -0.01em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.hero-image {
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    border: 4px solid var(--union-white);
+/* Animated Beer Bubbles */
+.bubbles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
 }
 
-/* Card styles */
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    background: var(--bg-light);
-    border-radius: 4px;
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: rise 15s infinite ease-in;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+.bubble:nth-child(1) { left: 10%; width: 70px; height: 70px; animation-delay: 0s; animation-duration: 13s; }
+.bubble:nth-child(2) { left: 25%; width: 45px; height: 45px; animation-delay: 2s; animation-duration: 15s; }
+.bubble:nth-child(3) { left: 40%; width: 55px; height: 55px; animation-delay: 4s; animation-duration: 17s; }
+.bubble:nth-child(4) { left: 55%; width: 40px; height: 40px; animation-delay: 1s; animation-duration: 14s; }
+.bubble:nth-child(5) { left: 70%; width: 60px; height: 60px; animation-delay: 3s; animation-duration: 16s; }
+.bubble:nth-child(6) { left: 85%; width: 50px; height: 50px; animation-delay: 5s; animation-duration: 15s; }
+
+@keyframes rise {
+    0% {
+        bottom: -100px;
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.5;
+    }
+    90% {
+        opacity: 0.2;
+    }
+    100% {
+        bottom: 110%;
+        opacity: 0;
+    }
 }
 
-.card-title {
-    font-family: var(--font-heading);
-    color: var(--union-blue);
-    border-bottom: 2px solid var(--union-red);
-    padding-bottom: 0.5rem;
-    display: inline-block;
+/* Buttons - Modern, Clean, No Unnecessary Borders */
+.btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 0.875rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.8rem;
+    border-radius: 50px;
+}
+
+.btn-xs {
+    padding: 0.4rem 1.2rem;
+    font-size: 0.75rem;
+    border-radius: 50px;
+}
+
+.btn-light {
+    background: var(--soft-cream);
+    color: var(--charcoal);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.btn-light:hover {
+    background: white;
+    color: var(--charcoal);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline-light {
+    background: transparent;
+    border: 2px solid rgba(250, 248, 245, 0.3) !important;
+    color: var(--soft-cream);
+}
+
+.btn-outline-light:hover {
+    background: rgba(250, 248, 245, 0.1);
+    border-color: var(--soft-cream) !important;
+    color: var(--soft-cream);
+    transform: translateY(-3px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--warm-terracotta) 0%, var(--burnt-sienna) 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(212, 87, 59, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--burnt-sienna) 0%, var(--warm-terracotta) 100%);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(212, 87, 59, 0.4);
+}
+
+.btn-outline-primary {
+    background: transparent;
+    border: 2px solid var(--warm-terracotta) !important;
+    color: var(--warm-terracotta);
+}
+
+.btn-outline-primary:hover {
+    background: var(--warm-terracotta);
+    border-color: var(--warm-terracotta) !important;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    border: 2px solid var(--slate) !important;
+    color: var(--slate);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--slate);
+    border-color: var(--slate) !important;
+    color: white;
+}
+
+/* Section Headings - Editorial Style */
+section h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+section .text-muted {
+    font-size: 1.1rem;
+    color: var(--slate) !important;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+/* Beer Cards - Clean, Modern Grid */
+.beer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 2.5rem;
+    margin: 4rem 0;
+}
+
+.beer-card {
+    background: white;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.beer-card:hover {
+    transform: translateY(-16px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
 }
 
 .beer-card-image {
-    height: 220px;
+    width: 100%;
+    height: 340px;
     object-fit: cover;
-    border-radius: 4px 4px 0 0;
+    transition: transform 0.6s ease;
 }
 
-/* Rating stars */
-.rating-stars {
-    color: var(--accent-color); /* Gold for stars */
-    font-size: 1.2rem;
+.beer-card:hover .beer-card-image {
+    transform: scale(1.05);
 }
 
-.rating-stars-small {
-    color: var(--accent-color);
+.beer-card-body {
+    padding: 2.25rem;
+}
+
+.beer-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    font-style: italic;
+}
+
+.beer-brewery {
     font-size: 0.9rem;
-}
-
-/* Beer details */
-.beer-hero-image {
-    max-height: 500px;
-    object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    border: 1px solid #eee;
-}
-
-.beer-stats {
-    background: var(--bg-contrast);
-    padding: 2rem;
-    border-radius: 4px;
-    margin: 1rem 0;
-    border-left: 4px solid var(--union-blue);
-}
-
-.stat-item {
-    text-align: center;
-    padding: 1rem;
-}
-
-.stat-value {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--union-blue);
-    font-family: var(--font-heading);
-}
-
-.stat-label {
-    font-size: 0.85rem;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: var(--warm-terracotta);
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.25rem;
 }
 
-/* Rating breakdown */
-.rating-breakdown {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: 1px solid #eee;
-}
-
-.rating-bar {
-    height: 6px;
-    background: #f0f0f0;
-    border-radius: 3px;
-    overflow: hidden;
-    margin: 0.5rem 0;
-}
-
-.rating-fill {
-    height: 100%;
-    background: var(--union-red);
-    transition: width 0.3s ease;
-}
-
-/* Review cards */
-.review-card {
-    background: #fff;
-    border-radius: 4px;
-    padding: 2rem;
+.beer-description {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--slate);
     margin-bottom: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: box-shadow 0.3s ease;
-    border-left: 4px solid transparent;
+    letter-spacing: -0.01em;
 }
 
-.review-card:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    border-left-color: var(--union-blue);
-}
-
-.review-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.reviewer-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 1.25rem;
-    border: 2px solid var(--union-red);
-    padding: 2px;
-}
-
-.review-meta {
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
-
-.review-content {
-    margin: 1.5rem 0;
-    line-height: 1.8;
-    color: var(--text-dark);
-}
-
-.review-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #f0f0f0;
-}
-
-.like-btn {
-    background: none;
+/* Badge - Minimal Pills */
+.badge {
+    font-family: var(--font-body);
+    font-weight: 600;
+    padding: 0.5em 1em;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
     border: none;
-    color: var(--text-light);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
 }
 
-.like-btn:hover,
-.like-btn.liked {
-    color: var(--union-red);
+.badge.bg-primary {
+    background: linear-gradient(135deg, var(--deep-forest) 0%, var(--deep-plum) 100%) !important;
+    color: var(--gold-accent);
 }
 
-/* Search filters */
-.filter-section {
-    background: var(--bg-contrast);
-    padding: 2rem;
-    border-radius: 4px;
-    margin-bottom: 2rem;
-    border: 1px solid #eee;
+.badge.bg-secondary {
+    background: var(--warm-sand) !important;
+    color: var(--charcoal);
+}
+
+/* Star Ratings */
+.stars {
+    color: var(--gold-accent);
+    font-size: 1.1rem;
+}
+
+.bi-star-fill {
+    color: var(--gold-accent) !important;
+}
+
+.bi-star {
+    color: #ddd !important;
+}
+
+/* Featured Section */
+.featured-section {
+    background: var(--warm-sand);
+    padding: 6rem 0;
+    position: relative;
+}
+
+/* Footer - Minimal Dark */
+footer {
+    background: var(--charcoal) !important;
+    color: #ffffff;
+    padding: 4rem 0 2rem;
+    border: none !important;
+}
+
+footer h5, footer h6 {
+    font-family: var(--font-body);
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+footer a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s;
+    opacity: 0.95;
+}
+
+footer a:hover {
+    color: var(--rich-amber) !important;
+    opacity: 1;
+}
+
+footer p, footer .text-muted {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Background Colors */
+.bg-light {
+    background-color: var(--soft-cream) !important;
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, var(--deep-forest) 0%, var(--deep-plum) 100%) !important;
+}
+
+.bg-dark {
+    background: var(--charcoal) !important;
+}
+
+/* Cards General */
+.card {
+    border: none;
+    background: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.card-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--charcoal);
+    font-style: italic;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    font-family: var(--font-body);
+    background: white;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--warm-terracotta);
+    box-shadow: 0 0 0 3px rgba(212, 87, 59, 0.1);
+    outline: none;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 0.9rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+}
+
+/* Alerts */
+.alert {
+    border: none;
+    border-radius: 8px;
+    border-left: 4px solid;
 }
 
 /* Pagination */
 .pagination .page-link {
-    color: var(--union-blue);
-    border-color: #dee2e6;
+    color: var(--charcoal);
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
     font-weight: 500;
+    margin: 0 4px;
 }
 
 .pagination .page-link:hover {
-    color: var(--union-blue);
-    background-color: #f0f0f0;
-    border-color: #dee2e6;
+    background: var(--warm-terracotta);
+    border-color: var(--warm-terracotta);
+    color: white;
 }
 
 .pagination .page-item.active .page-link {
-    background-color: var(--union-blue);
-    border-color: var(--union-blue);
-    color: var(--union-white);
+    background: var(--warm-terracotta);
+    border-color: var(--warm-terracotta);
+    color: white;
 }
 
-/* Footer */
-footer {
-    background: #001a4d !important; /* Even darker blue for footer */
-    border-top: 4px solid var(--union-red);
+/* Dropdown */
+.dropdown-menu {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
 }
 
-footer h5, footer h6 {
-    color: var(--union-white);
-    font-family: var(--font-heading);
+.dropdown-item {
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
 }
 
-footer a:hover {
-    color: var(--union-red) !important;
+.dropdown-item:hover {
+    background: var(--warm-sand);
+    color: var(--charcoal);
 }
 
-/* Responsive design */
+/* Responsive */
 @media (max-width: 768px) {
     .hero-section {
-        min-height: 50vh;
-        text-align: center;
-        padding: 3rem 0;
+        min-height: 70vh;
     }
 
     .hero-section h1 {
-        font-size: 2.5rem;
+        font-size: 3rem;
     }
-    
-    .hero-image {
-        max-height: 250px;
-        margin-top: 2rem;
-    }
-    
-    .beer-hero-image {
-        max-height: 300px;
-    }
-    
-    .review-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .reviewer-avatar {
-        margin-bottom: 1rem;
+
+    .beer-grid {
+        grid-template-columns: 1fr;
     }
 }
 
-/* Badge styles */
-.badge {
-    padding: 0.5em 0.8em;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    border-radius: 2px;
+/* Utilities */
+.text-gold {
+    color: var(--gold-accent) !important;
 }
 
-.badge-featured {
-    background-color: var(--union-red);
-    color: var(--union-white);
+::selection {
+    background: var(--rich-amber);
+    color: white;
 }
 
-.badge-new {
-    background-color: var(--union-blue);
-    color: var(--union-white);
+/* Navbar Toggler */
+.navbar-toggler {
+    border-color: var(--slate);
+    padding: 0.5rem 0.75rem;
 }
 
-.badge-popular {
-    background-color: var(--accent-color);
-    color: var(--text-dark);
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(45, 45, 45, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
-/* Toast notifications */
-.toast {
-    border-radius: 4px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border: none;
-    border-left: 4px solid var(--union-blue);
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(212, 87, 59, 0.1);
 }
 
-/* Utility classes */
-.text-warning-custom {
-    color: var(--warning-color) !important;
-}
-
-.bg-light-custom {
-    background-color: var(--bg-contrast) !important;
-}
-
-.shadow-custom {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
-}
-
-.rounded-custom {
-    border-radius: 4px !important;
-}
-
-/* Link overrides */
-a {
-    color: var(--union-blue);
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-a:hover {
-    color: var(--union-red);
+/* Smooth animations */
+* {
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
