@@ -177,8 +177,11 @@ body {
     left: 100%;
 }
 
-.hero-section .btn {
-    cursor: pointer;
+.hero-section .btn,
+.hero-section .btn:hover,
+.hero-section .btn:active,
+.hero-section .btn:focus {
+    cursor: pointer !important;
 }
 
 /* Hero Beer Image */
