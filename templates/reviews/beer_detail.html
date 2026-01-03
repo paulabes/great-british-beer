@@ -54,8 +54,8 @@
             <!-- Reviews Section -->
             <div class="mt-4">
                 <h3>Reviews</h3>
-                {% if reviews %}
-                    {% for review in reviews %}
+                {% if page_obj %}
+                    {% for review in page_obj %}
                         <div class="card mb-3">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start">
