@@ -93,9 +93,9 @@
 
         <!-- Beer Grid -->
         <div class="col-lg-9">
-            {% if beers %}
+            {% if page_obj %}
                 <div class="row g-4">
-                    {% for beer in beers %}
+                    {% for beer in page_obj %}
                         <div class="col-md-6 col-xl-4">
                             <div class="card h-100 beer-card">
                                 {% if beer.image %}
