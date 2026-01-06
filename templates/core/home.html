@@ -48,101 +48,162 @@
     </div>
 </section>
 
-<!-- Featured Beers Section with Dummy Cards -->
-<section class="featured-section">
+<!-- Sponsored Beers Section -->
+<section class="sponsored-section" style="padding: 4rem 0; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
     <div class="container">
-        <h2 class="mb-2">Featured Beers</h2>
-        <p class="text-muted mb-5">Our top-rated British brews</p>
+        <div class="d-flex align-items-center mb-4">
+            <h2 class="mb-0">Featured Beers</h2>
+            <span class="badge bg-warning text-dark ms-3">AD</span>
+        </div>
+        <p class="text-muted mb-5">Featured partnerships</p>
 
         <div class="beer-grid">
-            <!-- Dummy Beer Card 1 -->
-            <div class="beer-card">
-                <img src="https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=800&h=600&fit=crop"
-                     class="beer-card-image" alt="Autumn Amber Ale">
-                <div class="beer-card-body">
-                    <h3>Autumn Amber Ale</h3>
-                    <p class="beer-brewery">Cotswold Brewing Co.</p>
-                    <div class="mb-3">
-                        <span class="badge bg-primary me-2">Amber Ale</span>
-                        <span class="badge bg-secondary">5.2% ABV</span>
+            {% if sponsored_beers %}
+                {% for beer in sponsored_beers %}
+                    <div class="beer-card" style="border: 2px solid #ffc107;">
+                        {% if beer.image %}
+                            <img src="{{ beer.image.url }}" class="beer-card-image" alt="{{ beer.name }}">
+                        {% else %}
+                            <div class="beer-card-image" style="background: linear-gradient(135deg, var(--amber) 0%, var(--copper) 100%); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-beer fa-5x" style="color: var(--cream); opacity: 0.5;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="beer-card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h3>{{ beer.name }}</h3>
+                                <span class="badge bg-warning text-dark">SPONSORED</span>
+                            </div>
+                            <p class="beer-brewery">{{ beer.brewery.name }}</p>
+                            <div class="mb-3">
+                                <span class="badge bg-primary me-2">{{ beer.category.name }}</span>
+                                {% if beer.abv %}
+                                    <span class="badge bg-secondary">{{ beer.abv }}% ABV</span>
+                                {% endif %}
+                            </div>
+                            {% if beer.avg_rating %}
+                                <div class="stars mb-3">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= beer.avg_rating %}
+                                            <i class="bi bi-star-fill"></i>
+                                        {% else %}
+                                            <i class="bi bi-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ms-2 small text-muted">{{ beer.avg_rating|floatformat:1 }} ({{ beer.review_count }})</span>
+                                </div>
+                            {% endif %}
+                            <p class="beer-description">{{ beer.description|truncatewords:20|safe }}</p>
+                            <a href="{{ beer.get_absolute_url }}" class="btn btn-outline-primary btn-lg">
+                                View Details
+                            </a>
+                        </div>
                     </div>
-                    <div class="stars mb-3">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-half"></i>
-                        <span class="ms-2 small text-muted">4.5 (128 reviews)</span>
+                {% endfor %}
+            {% else %}
+                <!-- Dummy Sponsored Beer 1 -->
+                <div class="beer-card" style="border: 2px solid #ffc107;">
+                    <img src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=600&fit=crop"
+                         class="beer-card-image" alt="Premium Gold Lager">
+                    <div class="beer-card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3>Premium Gold Lager</h3>
+                            <span class="badge bg-warning text-dark">SPONSORED</span>
+                        </div>
+                        <p class="beer-brewery">Featured Brewery</p>
+                        <div class="mb-3">
+                            <span class="badge bg-primary me-2">Lager</span>
+                            <span class="badge bg-secondary">4.8% ABV</span>
+                        </div>
+                        <div class="stars mb-3">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                            <span class="ms-2 small text-muted">4.5 (142 reviews)</span>
+                        </div>
+                        <p class="beer-description">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </p>
+                        <a href="{% url 'reviews:beer_list' %}" class="btn btn-outline-primary btn-lg">
+                            View Details
+                        </a>
                     </div>
-                    <p class="beer-description">
-                        Rich caramel malt character with hints of toffee and autumn spice.
-                        A perfectly balanced seasonal brew.
-                    </p>
-                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-outline-primary btn-lg">
-                        View Details
-                    </a>
                 </div>
-            </div>
 
-            <!-- Dummy Beer Card 2 -->
-            <div class="beer-card">
-                <img src="https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=800&h=600&fit=crop"
-                     class="beer-card-image" alt="Copper Harvest IPA">
-                <div class="beer-card-body">
-                    <h3>Copper Harvest IPA</h3>
-                    <p class="beer-brewery">Yorkshire Craft Brewers</p>
-                    <div class="mb-3">
-                        <span class="badge bg-primary me-2">IPA</span>
-                        <span class="badge bg-secondary">6.5% ABV</span>
+                <!-- Dummy Sponsored Beer 2 -->
+                <div class="beer-card" style="border: 2px solid #ffc107;">
+                    <img src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=600&fit=crop"
+                         class="beer-card-image" alt="Premium Gold Lager">
+                    <div class="beer-card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3>Premium Gold Lager</h3>
+                            <span class="badge bg-warning text-dark">SPONSORED</span>
+                        </div>
+                        <p class="beer-brewery">Featured Brewery</p>
+                        <div class="mb-3">
+                            <span class="badge bg-primary me-2">Lager</span>
+                            <span class="badge bg-secondary">4.8% ABV</span>
+                        </div>
+                        <div class="stars mb-3">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                            <span class="ms-2 small text-muted">4.5 (142 reviews)</span>
+                        </div>
+                        <p class="beer-description">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </p>
+                        <a href="{% url 'reviews:beer_list' %}" class="btn btn-outline-primary btn-lg">
+                            View Details
+                        </a>
                     </div>
-                    <div class="stars mb-3">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <span class="ms-2 small text-muted">5.0 (94 reviews)</span>
-                    </div>
-                    <p class="beer-description">
-                        Bold hoppy character with citrus and pine notes.
-                        Crisp finish that captures the essence of British autumn.
-                    </p>
-                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-outline-primary btn-lg">
-                        View Details
-                    </a>
                 </div>
-            </div>
 
-            <!-- Dummy Beer Card 3 -->
-            <div class="beer-card">
-                <img src="https://images.unsplash.com/photo-1618183479302-1e0aa382c36b?w=800&h=600&fit=crop"
-                     class="beer-card-image" alt="Golden Wheat Lager">
-                <div class="beer-card-body">
-                    <h3>Golden Wheat Lager</h3>
-                    <p class="beer-brewery">Sussex Brewery</p>
-                    <div class="mb-3">
-                        <span class="badge bg-primary me-2">Lager</span>
-                        <span class="badge bg-secondary">4.8% ABV</span>
+                <!-- Dummy Sponsored Beer 3 -->
+                <div class="beer-card" style="border: 2px solid #ffc107;">
+                    <img src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=600&fit=crop"
+                         class="beer-card-image" alt="Premium Gold Lager">
+                    <div class="beer-card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3>Premium Gold Lager</h3>
+                            <span class="badge bg-warning text-dark">SPONSORED</span>
+                        </div>
+                        <p class="beer-brewery">Featured Brewery</p>
+                        <div class="mb-3">
+                            <span class="badge bg-primary me-2">Lager</span>
+                            <span class="badge bg-secondary">4.8% ABV</span>
+                        </div>
+                        <div class="stars mb-3">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                            <span class="ms-2 small text-muted">4.5 (142 reviews)</span>
+                        </div>
+                        <p class="beer-description">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </p>
+                        <a href="{% url 'reviews:beer_list' %}" class="btn btn-outline-primary btn-lg">
+                            View Details
+                        </a>
                     </div>
-                    <div class="stars mb-3">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star"></i>
-                        <span class="ms-2 small text-muted">4.0 (76 reviews)</span>
-                    </div>
-                    <p class="beer-description">
-                        Light and refreshing with subtle wheat notes and a clean finish.
-                        Perfect for any occasion.
-                    </p>
-                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-outline-primary btn-lg">
-                        View Details
-                    </a>
                 </div>
-            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
 
-            <!-- Real Beers from Database if available -->
+<!-- Best British Beers Section - Top 3 Most Popular -->
+<section class="featured-section">
+    <div class="container">
+        <h2 class="mb-2">Best British Beers</h2>
+        <p class="text-muted mb-5">Top-rated by our community</p>
+
+        <div class="beer-grid">
             {% if featured_beers %}
                 {% for beer in featured_beers %}
                     <div class="beer-card">
@@ -181,14 +242,25 @@
                         </div>
                     </div>
                 {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-beer fa-4x mb-4" style="color: var(--amber); opacity: 0.3;"></i>
+                    <h3>No Reviews Yet</h3>
+                    <p class="text-muted">Be the first to review our beers!</p>
+                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg mt-3">
+                        Browse All Beers
+                    </a>
+                </div>
             {% endif %}
         </div>
 
+        {% if featured_beers %}
         <div class="mt-5">
             <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg">
                 View All Beers
             </a>
         </div>
+        {% endif %}
     </div>
 </section>
 

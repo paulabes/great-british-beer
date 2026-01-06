@@ -76,6 +76,7 @@ class Beer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_featured = models.BooleanField(default=False, help_text="Featured on homepage")
+    is_sponsored = models.BooleanField(default=False, help_text="Sponsored/promoted beer")
     
     # SEO fields
     meta_description = models.CharField(max_length=160, blank=True)

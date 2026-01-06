@@ -9,17 +9,23 @@ from reviews.models import Beer, Review
 
 def home(request):
     """Home page view with featured content"""
-    # Get featured beers with highest ratings
+    # Get sponsored beers
+    sponsored_beers = Beer.objects.filter(is_sponsored=True).annotate(
+        avg_rating=Avg('reviews__rating'),
+        review_count=Count('reviews')
+    )[:3]
+
+    # Get top 3 most popular beers by review count and rating
     featured_beers = Beer.objects.annotate(
         avg_rating=Avg('reviews__rating'),
         review_count=Count('reviews')
-    ).filter(review_count__gte=1).order_by('-avg_rating')[:6]
-    
+    ).filter(review_count__gte=1).order_by('-review_count', '-avg_rating')[:3]
+
     # Get latest reviews
     latest_reviews = Review.objects.filter(
         is_approved=True
     ).select_related('beer', 'user').order_by('-created_at')[:6]
-    
+
     # Get beer of the month (highest rated beer this month)
     this_month = timezone.now().replace(
         day=1, hour=0, minute=0, second=0, microsecond=0
@@ -30,8 +36,9 @@ def home(request):
         reviews__created_at__gte=this_month,
         reviews__is_approved=True
     ).order_by('-avg_rating').first()
-    
+
     context = {
+        'sponsored_beers': sponsored_beers,
         'featured_beers': featured_beers,
         'latest_reviews': latest_reviews,
         'beer_of_month': beer_of_month,
