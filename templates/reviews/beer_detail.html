@@ -19,7 +19,7 @@
                     <div class="col-md-8">
                         <div class="card-body">
                             <h2 class="card-title">{{ beer.name }}</h2>
-                            <h5 class="text-muted">{{ beer.brewery.name }}</h5>
+                            <h5 class="text-muted"><a href="{% url 'reviews:brewery_detail' beer.brewery.slug %}" class="text-muted text-decoration-none">{{ beer.brewery.name }}</a></h5>
                             <p class="text-muted">{{ beer.category.name }}</p>
                             
                             {% if beer.average_rating %}
@@ -148,7 +148,7 @@
                     <h5>Brewery Info</h5>
                 </div>
                 <div class="card-body">
-                    <h6>{{ beer.brewery.name }}</h6>
+                    <h6><a href="{% url 'reviews:brewery_detail' beer.brewery.slug %}" class="text-decoration-none">{{ beer.brewery.name }}</a></h6>
                     {% if beer.brewery.description %}
                         <p>{{ beer.brewery.description }}</p>
                     {% endif %}
@@ -165,7 +165,7 @@
             {% if related_beers %}
                 <div class="card mt-3">
                     <div class="card-header">
-                        <h5>More from {{ beer.brewery.name }}</h5>
+                        <h5>More from <a href="{% url 'reviews:brewery_detail' beer.brewery.slug %}" class="text-decoration-none">{{ beer.brewery.name }}</a></h5>
                     </div>
                     <div class="card-body">
                         {% for related_beer in related_beers %}
