@@ -35,7 +35,7 @@ class Brewery(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True)
     location = models.CharField(max_length=200)
-    website = models.URLField(blank=True)
+    website = models.URLField(null=True, blank=True)
     founded_year = models.PositiveIntegerField(null=True, blank=True)
     image = models.ImageField(upload_to='breweries/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

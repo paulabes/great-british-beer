@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git pull:*)",
+      "Bash(python manage.py runserver:*)",
+      "Bash(source .venv/Scripts/activate)",
+      "Bash(python -m pip install:*)",
+      "Bash(rm:*)",
+      "Bash(python -m venv:*)",
+      "Bash(python:*)",
+      "Bash(.venv/Scripts/python.exe:*)",
+      "Bash(taskkill:*)",
+      "Bash(curl:*)",
+      "Bash(git checkout:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git rm:*)",
+      "WebFetch(domain:web-production-f09d5.up.railway.app)",
+      "Bash(railway whoami:*)",
+      "Bash(railway login:*)",
+      "Bash(railway logs:*)",
+      "Bash(railway variables:*)",
+      "Bash(railway run:*)",
+      "Bash(railway shell:*)",
+      "Bash(railway status:*)",
+      "Bash(railway up:*)",
+      "Bash(railway redeploy:*)",
+      "Bash(bash -c 'export DATABASE_URL=\"\"postgresql://postgres:wzUHSQzUBatXPLcqEAPwzuUvpbaZCkDK@shinkansen.proxy.rlwy.net:10398/railway\"\" && source .venv/Scripts/activate && python manage.py migrate --noinput')",
+      "WebSearch"
+    ]
+  }
+}

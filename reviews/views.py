@@ -59,11 +59,19 @@ def beer_list(request):
     paginator = Paginator(beers, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
+    # Get categories and breweries for filters
+    categories = Category.objects.all().order_by('name')
+    breweries = Brewery.objects.all().order_by('name')
+
     context = {
+        'beers': page_obj,  # Template expects 'beers'
         'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages(),
         'form': form,
         'total_beers': beers.count(),
+        'categories': categories,
+        'breweries': breweries,
     }
     return render(request, 'reviews/beer_list.html', context)
 
