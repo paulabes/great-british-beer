@@ -75,37 +75,21 @@
             {% endfor %}
         </div>
 
-        <!-- Pagination -->
-        {% if is_paginated %}
-            <nav aria-label="Brewery pagination" class="mt-5">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1">First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                        </li>
-                    {% endif %}
+        <!-- Infinite Scroll Loading Indicator -->
+        {% if is_paginated and page_obj.has_next %}
+            <div id="loading-indicator" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading more breweries...</span>
+                </div>
+                <p class="mt-3 text-muted">Loading more breweries...</p>
+            </div>
+            <div id="next-page-url" data-url="?page={{ page_obj.next_page_number }}" style="display: none;"></div>
+        {% endif %}
 
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
+        {% if is_paginated and not page_obj.has_next %}
+            <div class="text-center py-5">
+                <p class="text-muted">You've reached the end of the brewery list</p>
+            </div>
         {% endif %}
     {% else %}
         <div class="text-center py-5">
@@ -115,4 +99,83 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let loading = false;
+    let allBreweriesLoaded = false;
+    const breweryGrid = document.querySelector('.row.g-4');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const nextPageElement = document.getElementById('next-page-url');
+
+    if (!nextPageElement) {
+        allBreweriesLoaded = true;
+    }
+
+    function loadMoreBreweries() {
+        if (loading || allBreweriesLoaded || !nextPageElement) return;
+
+        loading = true;
+        loadingIndicator.style.display = 'block';
+
+        const nextUrl = nextPageElement.dataset.url;
+
+        fetch(window.location.pathname + nextUrl)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newBreweries = doc.querySelectorAll('.row.g-4 > .col-md-6');
+                const newNextPage = doc.getElementById('next-page-url');
+
+                // Append new breweries to the grid
+                newBreweries.forEach(brewery => {
+                    breweryGrid.appendChild(brewery);
+                });
+
+                // Update next page URL or mark as complete
+                if (newNextPage) {
+                    nextPageElement.dataset.url = newNextPage.dataset.url;
+                } else {
+                    allBreweriesLoaded = true;
+                    nextPageElement.remove();
+                    loadingIndicator.innerHTML = '<p class="text-muted">You\'ve reached the end of the brewery list</p>';
+                    loadingIndicator.style.display = 'block';
+                }
+
+                loading = false;
+                if (!allBreweriesLoaded) {
+                    loadingIndicator.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading more breweries:', error);
+                loading = false;
+                loadingIndicator.style.display = 'none';
+            });
+    }
+
+    // Infinite scroll detection
+    function checkScroll() {
+        if (loading || allBreweriesLoaded) return;
+
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const pageHeight = document.documentElement.scrollHeight;
+
+        // Load more when user is 500px from bottom
+        if (scrollPosition >= pageHeight - 500) {
+            loadMoreBreweries();
+        }
+    }
+
+    // Throttled scroll listener
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+        }
+        scrollTimeout = setTimeout(checkScroll, 100);
+    });
+});
+</script>
 {% endblock %}
