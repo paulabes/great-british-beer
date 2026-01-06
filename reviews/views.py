@@ -249,6 +249,26 @@ def category_detail(request, slug):
     return render(request, 'reviews/category_detail.html', context)
 
 
+def brewery_list(request):
+    """List all breweries"""
+    breweries = Brewery.objects.annotate(
+        beer_count=Count('beers')
+    ).order_by('name')
+
+    # Pagination
+    paginator = Paginator(breweries, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'breweries': page_obj,
+        'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages(),
+        'total_breweries': breweries.count(),
+    }
+    return render(request, 'reviews/brewery_list.html', context)
+
+
 def brewery_detail(request, slug):
     """List beers from a specific brewery"""
     brewery = get_object_or_404(Brewery, slug=slug)
@@ -256,12 +276,12 @@ def brewery_detail(request, slug):
         avg_rating=Avg('reviews__rating', filter=Q(reviews__is_approved=True)),
         review_count=Count('reviews', filter=Q(reviews__is_approved=True))
     ).order_by('-avg_rating', '-review_count')
-    
+
     # Pagination
     paginator = Paginator(beers, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'brewery': brewery,
         'page_obj': page_obj,

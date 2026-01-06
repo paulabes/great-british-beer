@@ -19,6 +19,7 @@ urlpatterns = [
     # Category and Brewery URLs
     path('category/<slug:slug>/', views.category_detail,
          name='category_detail'),
+    path('breweries/', views.brewery_list, name='brewery_list'),
     path('brewery/<slug:slug>/', views.brewery_detail, name='brewery_detail'),
     
     # AJAX URLs

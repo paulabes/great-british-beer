@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Breweries - Great British Beer{% endblock %}
+
+{% block content %}
+<!-- Hero Header for Brewery List -->
+<section class="py-5" style="background: linear-gradient(135deg, var(--warm-terracotta) 0%, var(--charcoal) 100%); position: relative; overflow: hidden;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-3 fw-bold mb-3" style="color: #ffffff; font-family: var(--font-display); font-style: italic; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">British Breweries</h1>
+                <p class="lead mb-0" style="color: rgba(255, 255, 255, 0.95); font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);">Discover the finest British breweries and their exceptional beers</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                {% if user.is_staff %}
+                    <a href="{% url 'admin:reviews_brewery_add' %}" class="btn btn-light btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Add Brewery
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container my-5 py-5">
+    {% if breweries %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="mb-3">All Breweries <span class="text-muted small">({{ total_breweries }} total)</span></h3>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for brewery in breweries %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 brewery-card">
+                        {% if brewery.image %}
+                            <img src="{{ brewery.image.url }}" class="card-img-top" alt="{{ brewery.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="beer-card-image-placeholder" style="height: 200px;"></div>
+                        {% endif %}
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ brewery.name }}</h5>
+
+                            {% if brewery.location %}
+                                <p class="text-muted small mb-2">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ brewery.location }}
+                                </p>
+                            {% endif %}
+
+                            {% if brewery.founded_year %}
+                                <p class="text-muted small mb-2">
+                                    <i class="bi bi-calendar me-1"></i>Founded {{ brewery.founded_year }}
+                                </p>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <span class="badge bg-primary">{{ brewery.beer_count }} beer{{ brewery.beer_count|pluralize }}</span>
+                            </div>
+
+                            {% if brewery.description %}
+                                <p class="card-text flex-grow-1 small">{{ brewery.description|truncatewords:20 }}</p>
+                            {% endif %}
+
+                            <div class="mt-auto">
+                                <a href="{% url 'reviews:brewery_detail' brewery.slug %}" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-eye me-2"></i>View Brewery
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav aria-label="Brewery pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-building fa-4x mb-4" style="color: var(--warm-terracotta); opacity: 0.5;"></i>
+            <h3>No breweries found</h3>
+            <p class="text-muted">Check back soon for brewery listings{% if user.is_staff %} or <a href="{% url 'admin:reviews_brewery_add' %}">add a new brewery</a>{% endif %}.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
