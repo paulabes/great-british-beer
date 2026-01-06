@@ -52,9 +52,9 @@ def add_padding_to_image(image_path, padding_percent=10):
 
 
 def add_padding_to_all_beers():
-    """Add 10% padding to all beer images."""
+    """Add 12% padding to all beer images."""
     print("\n" + "="*70)
-    print("Adding 10% Padding to All Beer Images")
+    print("Adding 12% Padding to All Beer Images")
     print("="*70 + "\n")
 
     beers = Beer.objects.exclude(image='')
@@ -71,7 +71,7 @@ def add_padding_to_all_beers():
             if os.path.exists(image_path):
                 print(f"[{i}/{total}] {beer.name}: ", end='')
 
-                if add_padding_to_image(image_path, padding_percent=10):
+                if add_padding_to_image(image_path, padding_percent=12):
                     print("[+] Padded")
                     success += 1
                 else:
@@ -89,7 +89,7 @@ def add_padding_to_all_beers():
     print(f"  Failed: {failed}")
     print(f"  Total processed: {total}")
     print("="*70 + "\n")
-    print("All images now have 10% padding to prevent pixelation!")
+    print("All images now have 12% padding to prevent pixelation!")
     print("="*70 + "\n")
 
 
