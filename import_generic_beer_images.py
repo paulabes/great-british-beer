@@ -22,31 +22,32 @@ from django.core.files.base import ContentFile
 
 # High quality, curated beer images from Unsplash (public domain)
 # Each image is selected to represent different beer styles
+# Using 1600x1600 for high resolution displays
 BEER_IMAGES = {
     # IPAs and Hoppy Beers
-    'IPA': 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=800&fit=crop',
-    'Session IPA': 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=800&fit=crop',
+    'IPA': 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=1600&h=1600&fit=crop&q=90',
+    'Session IPA': 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=1600&h=1600&fit=crop&q=90',
 
     # Pale Ales and Golden Beers
-    'Pale Ale': 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=800&h=800&fit=crop',
-    'Golden Ale': 'https://images.unsplash.com/photo-1618885472179-5e474019f2a9?w=800&h=800&fit=crop',
-    'Blonde Ale': 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=800&h=800&fit=crop',
+    'Pale Ale': 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=1600&h=1600&fit=crop&q=90',
+    'Golden Ale': 'https://images.unsplash.com/photo-1618885472179-5e474019f2a9?w=1600&h=1600&fit=crop&q=90',
+    'Blonde Ale': 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=1600&h=1600&fit=crop&q=90',
 
     # Lagers
-    'Lager': 'https://images.unsplash.com/photo-1618183479302-1e0aa382c36b?w=800&h=800&fit=crop',
+    'Lager': 'https://images.unsplash.com/photo-1618183479302-1e0aa382c36b?w=1600&h=1600&fit=crop&q=90',
 
     # Dark Beers
-    'Stout': 'https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=800&h=800&fit=crop',
-    'Porter': 'https://images.unsplash.com/photo-1608434332718-1db37e9daf80?w=800&h=800&fit=crop',
+    'Stout': 'https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=1600&h=1600&fit=crop&q=90',
+    'Porter': 'https://images.unsplash.com/photo-1608434332718-1db37e9daf80?w=1600&h=1600&fit=crop&q=90',
 
     # Bitters and Traditional Ales
-    'Bitter': 'https://images.unsplash.com/photo-1535961652354-923cb08225a7?w=800&h=800&fit=crop',
-    'Amber Ale': 'https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=800&h=800&fit=crop',
-    'Strong Ale': 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800&h=800&fit=crop',
+    'Bitter': 'https://images.unsplash.com/photo-1535961652354-923cb08225a7?w=1600&h=1600&fit=crop&q=90',
+    'Amber Ale': 'https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=1600&h=1600&fit=crop&q=90',
+    'Strong Ale': 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=1600&h=1600&fit=crop&q=90',
 }
 
 # Default fallback for any style not in the map
-DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=800&fit=crop'
+DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=1600&h=1600&fit=crop&q=90'
 
 
 def get_image_for_beer(beer):
@@ -67,7 +68,7 @@ def get_image_for_beer(beer):
 
 
 def download_and_save_image(url, beer):
-    """Download image and save to beer model."""
+    """Download image and save to beer model at high resolution."""
     try:
         print(f"  Downloading image for {beer.name}...")
 
@@ -86,15 +87,17 @@ def download_and_save_image(url, beer):
                 background.paste(img)
             img = background
 
-        # Resize to 600x600
-        img.thumbnail((600, 600), Image.Resampling.LANCZOS)
+        # Don't resize here - let model handle it at 1200x1200
+        # Just ensure it's not absurdly large
+        if img.height > 2400 or img.width > 2400:
+            img.thumbnail((2400, 2400), Image.Resampling.LANCZOS)
 
-        # Save to BytesIO
+        # Save to BytesIO with high quality
         output = BytesIO()
-        img.save(output, format='JPEG', quality=85)
+        img.save(output, format='JPEG', quality=95)
         output.seek(0)
 
-        # Save to model
+        # Save to model (model will resize to 1200x1200 max)
         filename = f"{beer.slug}.jpg"
         beer.image.save(filename, ContentFile(output.read()), save=True)
 

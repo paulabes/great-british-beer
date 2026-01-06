@@ -98,8 +98,8 @@ class Beer(models.Model):
         super().save(*args, **kwargs)
         if self.image:
             img = Image.open(self.image.path)
-            if img.height > 600 or img.width > 600:
-                output_size = (600, 600)
+            if img.height > 1200 or img.width > 1200:
+                output_size = (1200, 1200)
                 img.thumbnail(output_size)
                 img.save(self.image.path)
     

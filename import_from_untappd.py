@@ -83,11 +83,19 @@ def search_untappd(beer_name, brewery_name):
                     img_url = img.get('src')
 
                     if img_url:
-                        # Get high-res version
+                        # Get highest resolution version available
                         # Untappd uses: /label_100x100/ for thumbnails
-                        # Change to /label/ for full size
+                        # Remove all size restrictions for full resolution
                         img_url = img_url.replace('_100x100', '')
                         img_url = img_url.replace('_sq', '')
+                        img_url = img_url.replace('_200x200', '')
+                        img_url = img_url.replace('_320x320', '')
+                        img_url = img_url.replace('_640x640', '')
+
+                        # Force highest quality
+                        if 'untappd.akamaized.net' in img_url:
+                            # Untappd CDN - request original size
+                            img_url = img_url.split('?')[0]  # Remove query params that might limit size
 
                         print(f"    [+] Found on Untappd!")
                         return img_url
@@ -101,7 +109,7 @@ def search_untappd(beer_name, brewery_name):
 
 
 def download_and_save_image(url, beer):
-    """Download image and save to beer model."""
+    """Download image and save to beer model at highest available resolution."""
     try:
         response = requests.get(url, headers=HEADERS, timeout=30)
         response.raise_for_status()
@@ -118,15 +126,17 @@ def download_and_save_image(url, beer):
                 background.paste(img)
             img = background
 
-        # Resize to 600x600 max
-        img.thumbnail((600, 600), Image.Resampling.LANCZOS)
+        # Don't resize here - let the model handle it at 1200x1200
+        # Just ensure it's not absurdly large (over 2400x2400)
+        if img.height > 2400 or img.width > 2400:
+            img.thumbnail((2400, 2400), Image.Resampling.LANCZOS)
 
-        # Save to BytesIO
+        # Save to BytesIO with high quality
         output = BytesIO()
-        img.save(output, format='JPEG', quality=90)
+        img.save(output, format='JPEG', quality=95)
         output.seek(0)
 
-        # Save to model
+        # Save to model (model will resize to 1200x1200 max)
         filename = f"{beer.slug}.jpg"
         beer.image.save(filename, ContentFile(output.read()), save=True)
 
