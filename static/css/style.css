@@ -27,12 +27,46 @@
     box-sizing: border-box;
 }
 
+html, body {
+    min-height: 100vh;
+}
+
 body {
     font-family: var(--font-body);
     background: var(--soft-cream);
     color: var(--charcoal);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Vertically center content for login/register pages */
+main.auth-page {
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+}
+
+/* Make all headings lighter weight */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 400 !important;
+}
+
+/* Make h1 in title bars even lighter */
+.card-header h1,
+.page-header h1,
+section h1,
+.hero-section h1,
+.card-title,
+h2.card-title,
+.container h1,
+.container h2 {
+    font-weight: 100 !important;
 }
 
 /* Navigation - Modern, Right-Aligned */
@@ -53,8 +87,8 @@ body {
 
 .navbar-brand {
     font-family: var(--font-display);
-    font-size: 1.5rem !important;
-    font-weight: 400;
+    font-size: 1.875rem !important;
+    font-weight: 700;
     color: var(--charcoal) !important;
     letter-spacing: -0.01em;
     position: relative;
@@ -326,6 +360,14 @@ section .btn-outline-light:hover::before {
 .bubble:nth-child(4) { left: 55%; width: 40px; height: 40px; animation-delay: 1s; animation-duration: 14s; }
 .bubble:nth-child(5) { left: 70%; width: 60px; height: 60px; animation-delay: 3s; animation-duration: 16s; }
 .bubble:nth-child(6) { left: 85%; width: 50px; height: 50px; animation-delay: 5s; animation-duration: 15s; }
+.bubble:nth-child(7) { left: 15%; width: 25px; height: 25px; animation-delay: 1.5s; animation-duration: 8s; }
+.bubble:nth-child(8) { left: 32%; width: 30px; height: 30px; animation-delay: 0.5s; animation-duration: 9s; }
+.bubble:nth-child(9) { left: 48%; width: 20px; height: 20px; animation-delay: 3.5s; animation-duration: 7s; }
+.bubble:nth-child(10) { left: 62%; width: 35px; height: 35px; animation-delay: 2.5s; animation-duration: 10s; }
+.bubble:nth-child(11) { left: 78%; width: 28px; height: 28px; animation-delay: 4.5s; animation-duration: 8s; }
+.bubble:nth-child(12) { left: 92%; width: 22px; height: 22px; animation-delay: 1s; animation-duration: 9s; }
+.bubble:nth-child(13) { left: 5%; width: 18px; height: 18px; animation-delay: 3s; animation-duration: 6s; }
+.bubble:nth-child(14) { left: 95%; width: 26px; height: 26px; animation-delay: 2s; animation-duration: 7s; }
 
 @keyframes rise {
     0% {
@@ -347,32 +389,32 @@ section .btn-outline-light:hover::before {
 /* Buttons - Modern, Clean, No Unnecessary Borders */
 .btn {
     font-family: var(--font-body);
-    font-weight: 600;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 1rem 2.5rem;
+    padding: 0.85rem 1.5rem;
     border-radius: 50px;
     border: none;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    font-size: 0.875rem;
+    font-size: 0.71rem;
     display: inline-block;
     width: auto;
 }
 
 .btn-lg {
-    padding: 1rem 2.5rem;
-    font-size: 0.875rem;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.71rem;
     border-radius: 50px;
 }
 
 .btn-sm {
-    padding: 0.5rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     font-size: 0.8rem;
     border-radius: 50px;
 }
 
 .btn-xs {
-    padding: 0.4rem 1.2rem;
+    padding: 0.85rem 1.5rem;
     font-size: 0.75rem;
     border-radius: 50px;
 }
@@ -420,13 +462,18 @@ section .btn-outline-light:hover::before {
     background: transparent;
     border: 2px solid var(--warm-terracotta) !important;
     color: var(--warm-terracotta);
+    outline: none !important;
 }
 
-.btn-outline-primary:hover {
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
     background: var(--warm-terracotta);
     border-color: var(--warm-terracotta) !important;
     color: white;
     transform: translateY(-2px);
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .btn-outline-secondary {
@@ -488,6 +535,50 @@ section .text-muted {
     height: 340px;
     object-fit: cover;
     transition: transform 0.6s ease;
+}
+
+/* Placeholder image for beers without real images */
+.beer-card-image-placeholder {
+    width: 100%;
+    height: 340px;
+    background: linear-gradient(135deg, #cc8800 0%, #3e2723 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.beer-card-image-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100"><text x="20" y="50" font-size="35" fill="rgba(255,255,255,0.15)">🍺</text><text x="80" y="50" font-size="35" fill="rgba(255,255,255,0.15)">🍺</text><text x="140" y="50" font-size="35" fill="rgba(255,255,255,0.15)">🍺</text></svg>') center/150px repeat;
+    filter: blur(3px);
+    opacity: 0.4;
+}
+
+.beer-card-image-placeholder::after {
+    content: 'Great British Beer';
+    position: absolute;
+    font-size: clamp(0.5rem, 2vw, 0.75rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Sponsored/Featured beer placeholder with different text */
+.beer-card-image-placeholder-sponsored::after {
+    content: 'Your beer here';
 }
 
 .beer-card:hover .beer-card-image {
@@ -631,20 +722,41 @@ footer p, footer .text-muted {
 }
 
 /* Forms */
-.form-control, .form-select {
+.form-control, .form-select, input[type="text"], input[type="email"],
+input[type="password"], input[type="number"], input[type="tel"],
+input[type="url"], input[type="search"], select {
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.85rem 1.1rem;
+    border-radius: 50px;
+    padding: 0.85rem 1.5rem;
     font-family: var(--font-body);
     background: white;
     transition: all 0.3s;
     font-size: 0.95rem;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus, .form-select:focus, input:focus, select:focus {
     border-color: var(--warm-terracotta);
     box-shadow: 0 0 0 3px rgba(212, 87, 59, 0.1);
     outline: none;
+}
+
+/* Textarea needs less border radius for multi-line text */
+textarea.form-control, textarea {
+    border-radius: 20px;
+}
+
+/* Accordion buttons lozenge-shaped */
+.accordion-button {
+    border-radius: 50px !important;
+}
+
+.accordion-button:not(.collapsed) {
+    border-radius: 50px 50px 0 0 !important;
+}
+
+.accordion-item {
+    border-radius: 50px !important;
+    overflow: hidden;
 }
 
 .form-label {
@@ -729,7 +841,7 @@ footer p, footer .text-muted {
 
 /* Navbar Toggler */
 .navbar-toggler {
-    border-color: var(--slate);
+    border: none !important;
     padding: 0.5rem 0.75rem;
 }
 
@@ -738,7 +850,8 @@ footer p, footer .text-muted {
 }
 
 .navbar-toggler:focus {
-    box-shadow: 0 0 0 3px rgba(212, 87, 59, 0.1);
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 /* Smooth animations */

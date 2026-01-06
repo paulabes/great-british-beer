@@ -16,12 +16,19 @@
         <div class="bubble"></div>
         <div class="bubble"></div>
         <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
     </div>
 
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-7">
-                <h1 class="mb-4">Great<br>British<br>Beer</h1>
+                <h1 class="mb-4">The Great<br>British<br>Beer-Off!</h1>
                 <p class="mb-5">
                     Discover authentic British ales, lagers, and craft beers.
                     Join our community of beer enthusiasts and share your tasting experiences.
@@ -39,12 +46,84 @@
             </div>
             <div class="col-lg-5 d-none d-lg-block">
                 <div class="hero-beer-image">
-                    <img src="https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=800&h=600&fit=crop"
-                         alt="Autumn Amber Ale"
-                         class="img-fluid">
+                    {% if hero_beer_image %}
+                        <img src="{{ MEDIA_URL }}{{ hero_beer_image }}" alt="Great British Beer" class="img-fluid" style="border-radius: 12px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);">
+                    {% else %}
+                        <div class="beer-card-image-placeholder" style="height: 400px; border-radius: 12px;"></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- Best British Beers Section - Top 3 Most Popular -->
+<section class="featured-section">
+    <div class="container">
+        <h2 class="mb-2">Best British Beers</h2>
+        <p class="text-muted mb-5">Top-rated by our community</p>
+
+        <div class="beer-grid">
+            {% if featured_beers %}
+                {% for beer in featured_beers %}
+                    <div class="beer-card">
+                        {% if beer.image %}
+                            <img src="{{ beer.image.url }}" class="beer-card-image" alt="{{ beer.name }}">
+                        {% else %}
+                            <div class="beer-card-image-placeholder"></div>
+                        {% endif %}
+                        <div class="beer-card-body">
+                            <h3>{{ beer.name }}</h3>
+                            <p class="beer-brewery">{{ beer.brewery.name }}</p>
+                            <div class="mb-3">
+                                <span class="badge bg-primary me-2">{{ beer.category.name }}</span>
+                                {% if beer.abv %}
+                                    <span class="badge bg-secondary">{{ beer.abv }}% ABV</span>
+                                {% endif %}
+                            </div>
+                            <div class="stars mb-3">
+                                {% if beer.avg_rating %}
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= beer.avg_rating %}
+                                            <i class="bi bi-star-fill"></i>
+                                        {% else %}
+                                            <i class="bi bi-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ms-2 small text-muted">{{ beer.avg_rating|floatformat:1 }} ({{ beer.review_count }} review{{ beer.review_count|pluralize }})</span>
+                                {% else %}
+                                    {% for i in "12345" %}
+                                        <i class="bi bi-star"></i>
+                                    {% endfor %}
+                                    <span class="ms-2 small text-muted">No reviews yet</span>
+                                {% endif %}
+                            </div>
+                            <p class="beer-description">{{ beer.description|truncatewords:20|safe }}</p>
+                            <a href="{{ beer.get_absolute_url }}" class="btn btn-outline-primary btn-lg">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-beer fa-4x mb-4" style="color: var(--amber); opacity: 0.3;"></i>
+                    <h3>No Reviews Yet</h3>
+                    <p class="text-muted">Be the first to review our beers!</p>
+                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg mt-3">
+                        Browse All Beers
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if featured_beers %}
+        <div class="mt-5">
+            <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg">
+                View All Beers
+            </a>
+        </div>
+        {% endif %}
     </div>
 </section>
 
@@ -58,52 +137,53 @@
         <p class="text-muted mb-5">Featured partnerships</p>
 
         <div class="beer-grid">
-            {% if sponsored_beers %}
-                {% for beer in sponsored_beers %}
-                    <div class="beer-card" style="border: 2px solid #ffc107;">
-                        {% if beer.image %}
-                            <img src="{{ beer.image.url }}" class="beer-card-image" alt="{{ beer.name }}">
-                        {% else %}
-                            <div class="beer-card-image" style="background: linear-gradient(135deg, var(--amber) 0%, var(--copper) 100%); display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-beer fa-5x" style="color: var(--cream); opacity: 0.5;"></i>
-                            </div>
-                        {% endif %}
-                        <div class="beer-card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h3>{{ beer.name }}</h3>
-                                <span class="badge bg-warning text-dark">SPONSORED</span>
-                            </div>
-                            <p class="beer-brewery">{{ beer.brewery.name }}</p>
-                            <div class="mb-3">
-                                <span class="badge bg-primary me-2">{{ beer.category.name }}</span>
-                                {% if beer.abv %}
-                                    <span class="badge bg-secondary">{{ beer.abv }}% ABV</span>
-                                {% endif %}
-                            </div>
-                            {% if beer.avg_rating %}
-                                <div class="stars mb-3">
-                                    {% for i in "12345" %}
-                                        {% if forloop.counter <= beer.avg_rating %}
-                                            <i class="bi bi-star-fill"></i>
-                                        {% else %}
-                                            <i class="bi bi-star"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                    <span class="ms-2 small text-muted">{{ beer.avg_rating|floatformat:1 }} ({{ beer.review_count }})</span>
-                                </div>
-                            {% endif %}
-                            <p class="beer-description">{{ beer.description|truncatewords:20|safe }}</p>
-                            <a href="{{ beer.get_absolute_url }}" class="btn btn-outline-primary btn-lg">
-                                View Details
-                            </a>
+            {% for beer in sponsored_beers %}
+                <div class="beer-card" style="border: 2px solid #ffc107;">
+                    {% if beer.image %}
+                        <img src="{{ beer.image.url }}" class="beer-card-image" alt="{{ beer.name }}">
+                    {% else %}
+                        <div class="beer-card-image-placeholder beer-card-image-placeholder-sponsored"></div>
+                    {% endif %}
+                    <div class="beer-card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3>{{ beer.name }}</h3>
+                            <span class="badge bg-warning text-dark">SPONSORED</span>
                         </div>
+                        <p class="beer-brewery">{{ beer.brewery.name }}</p>
+                        <div class="mb-3">
+                            <span class="badge bg-primary me-2">{{ beer.category.name }}</span>
+                            {% if beer.abv %}
+                                <span class="badge bg-secondary">{{ beer.abv }}% ABV</span>
+                            {% endif %}
+                        </div>
+                        <div class="stars mb-3">
+                            {% if beer.avg_rating %}
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= beer.avg_rating %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 small text-muted">{{ beer.avg_rating|floatformat:1 }} ({{ beer.review_count }} review{{ beer.review_count|pluralize }})</span>
+                            {% else %}
+                                {% for i in "12345" %}
+                                    <i class="bi bi-star"></i>
+                                {% endfor %}
+                                <span class="ms-2 small text-muted">No reviews yet</span>
+                            {% endif %}
+                        </div>
+                        <p class="beer-description">{{ beer.description|truncatewords:20|safe }}</p>
+                        <a href="{{ beer.get_absolute_url }}" class="btn btn-outline-primary btn-lg">
+                            View Details
+                        </a>
                     </div>
-                {% endfor %}
-            {% else %}
+                </div>
+            {% endfor %}
+            {% if False %}
                 <!-- Dummy Sponsored Beer 1 -->
                 <div class="beer-card" style="border: 2px solid #ffc107;">
-                    <img src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=600&fit=crop"
-                         class="beer-card-image" alt="Premium Gold Lager">
+                    <div class="beer-card-image-placeholder beer-card-image-placeholder-sponsored"></div>
                     <div class="beer-card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h3>Premium Gold Lager</h3>
@@ -133,8 +213,7 @@
 
                 <!-- Dummy Sponsored Beer 2 -->
                 <div class="beer-card" style="border: 2px solid #ffc107;">
-                    <img src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=600&fit=crop"
-                         class="beer-card-image" alt="Premium Gold Lager">
+                    <div class="beer-card-image-placeholder beer-card-image-placeholder-sponsored"></div>
                     <div class="beer-card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h3>Premium Gold Lager</h3>
@@ -164,8 +243,7 @@
 
                 <!-- Dummy Sponsored Beer 3 -->
                 <div class="beer-card" style="border: 2px solid #ffc107;">
-                    <img src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&h=600&fit=crop"
-                         class="beer-card-image" alt="Premium Gold Lager">
+                    <div class="beer-card-image-placeholder beer-card-image-placeholder-sponsored"></div>
                     <div class="beer-card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h3>Premium Gold Lager</h3>
@@ -194,73 +272,6 @@
                 </div>
             {% endif %}
         </div>
-    </div>
-</section>
-
-<!-- Best British Beers Section - Top 3 Most Popular -->
-<section class="featured-section">
-    <div class="container">
-        <h2 class="mb-2">Best British Beers</h2>
-        <p class="text-muted mb-5">Top-rated by our community</p>
-
-        <div class="beer-grid">
-            {% if featured_beers %}
-                {% for beer in featured_beers %}
-                    <div class="beer-card">
-                        {% if beer.image %}
-                            <img src="{{ beer.image.url }}" class="beer-card-image" alt="{{ beer.name }}">
-                        {% else %}
-                            <div class="beer-card-image" style="background: linear-gradient(135deg, var(--amber) 0%, var(--copper) 100%); display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-beer fa-5x" style="color: var(--cream); opacity: 0.5;"></i>
-                            </div>
-                        {% endif %}
-                        <div class="beer-card-body">
-                            <h3>{{ beer.name }}</h3>
-                            <p class="beer-brewery">{{ beer.brewery.name }}</p>
-                            <div class="mb-3">
-                                <span class="badge bg-primary me-2">{{ beer.category.name }}</span>
-                                {% if beer.abv %}
-                                    <span class="badge bg-secondary">{{ beer.abv }}% ABV</span>
-                                {% endif %}
-                            </div>
-                            {% if beer.avg_rating %}
-                                <div class="stars mb-3">
-                                    {% for i in "12345" %}
-                                        {% if forloop.counter <= beer.avg_rating %}
-                                            <i class="bi bi-star-fill"></i>
-                                        {% else %}
-                                            <i class="bi bi-star"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                    <span class="ms-2 small text-muted">{{ beer.avg_rating|floatformat:1 }} ({{ beer.review_count }})</span>
-                                </div>
-                            {% endif %}
-                            <p class="beer-description">{{ beer.description|truncatewords:20|safe }}</p>
-                            <a href="{{ beer.get_absolute_url }}" class="btn btn-outline-primary btn-lg">
-                                View Details
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-12 text-center py-5">
-                    <i class="fas fa-beer fa-4x mb-4" style="color: var(--amber); opacity: 0.3;"></i>
-                    <h3>No Reviews Yet</h3>
-                    <p class="text-muted">Be the first to review our beers!</p>
-                    <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg mt-3">
-                        Browse All Beers
-                    </a>
-                </div>
-            {% endif %}
-        </div>
-
-        {% if featured_beers %}
-        <div class="mt-5">
-            <a href="{% url 'reviews:beer_list' %}" class="btn btn-primary btn-lg">
-                View All Beers
-            </a>
-        </div>
-        {% endif %}
     </div>
 </section>
 
