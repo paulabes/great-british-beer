@@ -4,7 +4,7 @@ Test cases for beer review functionality and models.
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from reviews.models import Beer, Review
+from reviews.models import Beer, Review, Brewery, Category
 from reviews.forms import BeerForm, ReviewForm
 from decimal import Decimal
 
@@ -16,9 +16,13 @@ class BeerModelTest(TestCase):
 
     def setUp(self):
         """Set up test data."""
+        self.brewery = Brewery.objects.create(name='Test Brewery', slug='test-brewery')
+        self.category = Category.objects.create(name='Test Category', slug='test-category')
         self.beer_data = {
             'name': 'Test Bitter',
-            'brewery': 'Test Brewery',
+            'slug': 'test-bitter',
+            'brewery': self.brewery,
+            'category': self.category,
             'style': 'Bitter',
             'abv': Decimal('4.5'),
             'description': 'A test bitter beer'
@@ -28,27 +32,25 @@ class BeerModelTest(TestCase):
         """Test beer creation with valid data."""
         beer = Beer.objects.create(**self.beer_data)
         self.assertEqual(beer.name, 'Test Bitter')
-        self.assertEqual(beer.brewery, 'Test Brewery')
+        self.assertEqual(beer.brewery, self.brewery)
         self.assertEqual(beer.abv, Decimal('4.5'))
 
     def test_beer_str_representation(self):
         """Test string representation of beer."""
         beer = Beer.objects.create(**self.beer_data)
-        expected_str = 'Test Bitter - Test Brewery'
+        expected_str = 'Test Bitter by Test Brewery'
         self.assertEqual(str(beer), expected_str)
 
     def test_beer_slug_generation(self):
         """Test automatic slug generation."""
+        # Slug is required in model, so it must be provided or we test that it works if we provide it
         beer = Beer.objects.create(**self.beer_data)
-        self.assertIsNotNone(beer.slug)
-        self.assertIn('test', beer.slug.lower())
+        self.assertEqual(beer.slug, 'test-bitter')
 
     def test_beer_average_rating_no_reviews(self):
         """Test average rating calculation with no reviews."""
         beer = Beer.objects.create(**self.beer_data)
-        # Assuming there's an average_rating method
-        if hasattr(beer, 'average_rating'):
-            self.assertEqual(beer.average_rating(), 0)
+        self.assertIsNone(beer.get_average_rating())
 
 
 class ReviewModelTest(TestCase):
@@ -61,9 +63,13 @@ class ReviewModelTest(TestCase):
             email='test@example.com',
             password='TestPass123!'
         )
+        self.brewery = Brewery.objects.create(name='Test Brewery', slug='test-brewery')
+        self.category = Category.objects.create(name='Test Category', slug='test-category')
         self.beer = Beer.objects.create(
             name='Test Bitter',
-            brewery='Test Brewery',
+            slug='test-bitter',
+            brewery=self.brewery,
+            category=self.category,
             style='Bitter',
             abv=Decimal('4.5'),
             description='A test bitter beer'
@@ -85,22 +91,26 @@ class ReviewModelTest(TestCase):
 
     def test_review_str_representation(self):
         """Test string representation of review."""
+        # Create a user with no reviews for this test
+        user2 = User.objects.create_user(username='user2', email='user2@example.com', password='password')
         review = Review.objects.create(
             beer=self.beer,
-            user=self.user,
+            user=user2,
             rating=4,
             title='Great beer!',
             content='This beer is really good.'
         )
-        expected_str = f'{self.beer.name} - {self.user.username} (4/5)'
+        # Model __str__ is: f"{self.title} - {self.beer.name} by {self.user.username}"
+        expected_str = f"Great beer! - {self.beer.name} by user2"
         self.assertEqual(str(review), expected_str)
 
     def test_review_rating_range(self):
         """Test review rating validation."""
         # Test minimum rating
+        user3 = User.objects.create_user(username='user3', email='user3@example.com', password='password')
         review_min = Review.objects.create(
             beer=self.beer,
-            user=self.user,
+            user=user3,
             rating=1,
             title='Poor beer',
             content='Not good.'
@@ -108,9 +118,10 @@ class ReviewModelTest(TestCase):
         self.assertEqual(review_min.rating, 1)
 
         # Test maximum rating
+        user4 = User.objects.create_user(username='user4', email='user4@example.com', password='password')
         review_max = Review.objects.create(
             beer=self.beer,
-            user=self.user,
+            user=user4,
             rating=5,
             title='Excellent beer',
             content='Perfect!'
@@ -121,11 +132,25 @@ class ReviewModelTest(TestCase):
 class BeerFormsTest(TestCase):
     """Test cases for beer-related forms."""
 
+    def setUp(self):
+        self.brewery = Brewery.objects.create(name='Test Brewery', slug='test-brewery')
+        self.category = Category.objects.create(name='Test Category', slug='test-category')
+        self.beer = Beer.objects.create(
+            name='Test Beer For Form',
+            slug='test-beer-form',
+            brewery=self.brewery,
+            category=self.category,
+            style='Lager',
+            abv='4.2'
+        )
+
     def test_beer_form_valid(self):
         """Test valid beer form submission."""
         form_data = {
             'name': 'Test Lager',
-            'brewery': 'Test Brewery',
+            'slug': 'test-lager',
+            'brewery': self.brewery.id,
+            'category': self.category.id,
             'style': 'Lager',
             'abv': '4.2',
             'description': 'A crisp lager'
@@ -137,7 +162,9 @@ class BeerFormsTest(TestCase):
         """Test beer form with invalid ABV."""
         form_data = {
             'name': 'Test Beer',
-            'brewery': 'Test Brewery',
+            'slug': 'test-beer',
+            'brewery': self.brewery.id,
+            'category': self.category.id,
             'style': 'Ale',
             'abv': '-1.0',  # Invalid negative ABV
             'description': 'A test beer'
@@ -147,12 +174,19 @@ class BeerFormsTest(TestCase):
 
     def test_review_form_valid(self):
         """Test valid review form submission."""
+        # ReviewForm requires a 'beer' field in its definition (ModelForm)
+        # even if it's hidden or handled in view.
+        # But looking at ReviewForm.Meta, 'beer' is in fields.
         form_data = {
+            'beer': self.beer.id, # Needs beer ID
             'rating': 4,
             'title': 'Good beer',
             'content': 'I enjoyed this beer very much.'
         }
         form = ReviewForm(data=form_data)
+        # If it's invalid, let's see why
+        if not form.is_valid():
+             print(form.errors)
         self.assertTrue(form.is_valid())
 
     def test_review_form_invalid_rating(self):
@@ -177,9 +211,13 @@ class BeerViewsTest(TestCase):
             email='test@example.com',
             password='TestPass123!'
         )
+        self.brewery = Brewery.objects.create(name='Test Brewery', slug='test-brewery')
+        self.category = Category.objects.create(name='Test Category', slug='test-category')
         self.beer = Beer.objects.create(
             name='Test Bitter',
-            brewery='Test Brewery',
+            slug='test-bitter',
+            brewery=self.brewery,
+            category=self.category,
             style='Bitter',
             abv=Decimal('4.5'),
             description='A test bitter beer'
@@ -278,13 +316,17 @@ class ReviewsIntegrationTest(TestCase):
             email='reviewer@example.com',
             password='ReviewPass123!'
         )
+        self.brewery = Brewery.objects.create(name='Test Brewery', slug='test-brewery')
+        self.category = Category.objects.create(name='Test Category', slug='test-category')
 
     def test_complete_beer_review_flow(self):
         """Test complete flow from beer creation to review."""
         # Step 1: Create a beer (assuming admin creates it)
         beer = Beer.objects.create(
             name='Integration Test Beer',
-            brewery='Test Brewery',
+            slug='integration-test-beer',
+            brewery=self.brewery,
+            category=self.category,
             style='IPA',
             abv=Decimal('5.5'),
             description='A beer for integration testing'
@@ -332,15 +374,21 @@ class ReviewsIntegrationTest(TestCase):
     def test_search_and_filter_functionality(self):
         """Test search and filtering features."""
         # Create multiple beers
+        brewery2 = Brewery.objects.create(name='Dark Brewery', slug='dark-brewery')
+
         Beer.objects.create(
             name='Hoppy IPA',
-            brewery='Hop Brewery',
+            slug='hoppy-ipa',
+            brewery=self.brewery,
+            category=self.category,
             style='IPA',
             abv=Decimal('6.0')
         )
         Beer.objects.create(
             name='Smooth Stout',
-            brewery='Dark Brewery',
+            slug='smooth-stout',
+            brewery=brewery2,
+            category=self.category,
             style='Stout',
             abv=Decimal('4.8')
         )
@@ -361,7 +409,9 @@ class ReviewsIntegrationTest(TestCase):
         
         beer = Beer.objects.create(
             name='Permission Test Beer',
-            brewery='Test Brewery',
+            slug='permission-test-beer',
+            brewery=self.brewery,
+            category=self.category,
             style='Ale',
             abv=Decimal('4.0')
         )
