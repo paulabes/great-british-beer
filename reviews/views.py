@@ -294,6 +294,9 @@ def review_list(request):
     """List all approved reviews"""
     reviews = Review.objects.filter(is_approved=True).select_related(
         'beer', 'beer__brewery', 'user'
+    ).annotate(
+        like_count=Count('likes', distinct=True),
+        comment_count=Count('comments', distinct=True)
     ).order_by('-created_at')
     
     # Pagination
