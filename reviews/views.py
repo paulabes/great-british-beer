@@ -81,7 +81,11 @@ def beer_detail(request, slug):
     beer = get_object_or_404(Beer.objects.select_related('brewery', 'category'), slug=slug)
     reviews = Review.objects.filter(
         beer=beer, is_approved=True
-    ).select_related('user').order_by('-created_at')
+    ).select_related('user').annotate(
+        likes_count=Count('likes', distinct=True)
+    ).prefetch_related(
+        'comments', 'comments__user'
+    ).order_by('-created_at')
     
     # Pagination for reviews
     paginator = Paginator(reviews, 10)
@@ -124,6 +128,7 @@ def beer_detail(request, slug):
     context = {
         'beer': beer,
         'page_obj': page_obj,
+        'reviews': page_obj,
         'stats': stats,
         'user_review': user_review,
     }
