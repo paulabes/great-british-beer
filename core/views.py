@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Avg, Count
 from django.utils import timezone
+from django.utils.functional import SimpleLazyObject
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
 from django.core.management import call_command
@@ -13,20 +14,21 @@ from django.conf import settings
 def home(request):
     """Home page view with featured content"""
     # Get sponsored beers (or random beers if no sponsored ones exist)
-    sponsored_beers = Beer.objects.filter(is_sponsored=True).annotate(
+    # Convert to list to avoid re-evaluation since sliced querysets aren't cached
+    sponsored_beers = list(Beer.objects.filter(is_sponsored=True).select_related('brewery', 'category').annotate(
         avg_rating=Avg('reviews__rating'),
         review_count=Count('reviews')
-    )[:3]
+    )[:3])
 
     # If no sponsored beers, use random beers as placeholders
-    if not sponsored_beers.exists():
-        sponsored_beers = Beer.objects.annotate(
+    if not sponsored_beers:
+        sponsored_beers = list(Beer.objects.select_related('brewery', 'category').annotate(
             avg_rating=Avg('reviews__rating'),
             review_count=Count('reviews')
-        ).order_by('?')[:3]
+        ).order_by('?')[:3])
 
     # Get top 6 beers by average star rating
-    featured_beers = Beer.objects.annotate(
+    featured_beers = Beer.objects.select_related('brewery', 'category').annotate(
         avg_rating=Avg('reviews__rating'),
         review_count=Count('reviews')
     ).order_by('-avg_rating', '-review_count')[:6]
@@ -34,18 +36,22 @@ def home(request):
     # Get latest reviews
     latest_reviews = Review.objects.filter(
         is_approved=True
-    ).select_related('beer', 'user').order_by('-created_at')[:6]
+    ).select_related('beer__brewery', 'user').order_by('-created_at')[:6]
 
     # Get beer of the month (highest rated beer this month)
-    this_month = timezone.now().replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    )
-    beer_of_month = Beer.objects.annotate(
-        avg_rating=Avg('reviews__rating')
-    ).filter(
-        reviews__created_at__gte=this_month,
-        reviews__is_approved=True
-    ).order_by('-avg_rating').first()
+    # Use SimpleLazyObject to avoid query if unused in template
+    def get_beer_of_month():
+        this_month = timezone.now().replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        )
+        return Beer.objects.annotate(
+            avg_rating=Avg('reviews__rating')
+        ).filter(
+            reviews__created_at__gte=this_month,
+            reviews__is_approved=True
+        ).order_by('-avg_rating').first()
+
+    beer_of_month = SimpleLazyObject(get_beer_of_month)
 
     # Get a random beer image from the beers folder
     hero_beer_image = None
