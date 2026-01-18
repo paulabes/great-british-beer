@@ -13,20 +13,20 @@ from django.conf import settings
 def home(request):
     """Home page view with featured content"""
     # Get sponsored beers (or random beers if no sponsored ones exist)
-    sponsored_beers = Beer.objects.filter(is_sponsored=True).annotate(
+    sponsored_beers = Beer.objects.select_related('brewery', 'category').filter(is_sponsored=True).annotate(
         avg_rating=Avg('reviews__rating'),
         review_count=Count('reviews')
     )[:3]
 
     # If no sponsored beers, use random beers as placeholders
     if not sponsored_beers.exists():
-        sponsored_beers = Beer.objects.annotate(
+        sponsored_beers = Beer.objects.select_related('brewery', 'category').annotate(
             avg_rating=Avg('reviews__rating'),
             review_count=Count('reviews')
         ).order_by('?')[:3]
 
     # Get top 6 beers by average star rating
-    featured_beers = Beer.objects.annotate(
+    featured_beers = Beer.objects.select_related('brewery', 'category').annotate(
         avg_rating=Avg('reviews__rating'),
         review_count=Count('reviews')
     ).order_by('-avg_rating', '-review_count')[:6]
@@ -34,7 +34,7 @@ def home(request):
     # Get latest reviews
     latest_reviews = Review.objects.filter(
         is_approved=True
-    ).select_related('beer', 'user').order_by('-created_at')[:6]
+    ).select_related('beer', 'beer__brewery', 'user').order_by('-created_at')[:6]
 
     # Get beer of the month (highest rated beer this month)
     this_month = timezone.now().replace(
