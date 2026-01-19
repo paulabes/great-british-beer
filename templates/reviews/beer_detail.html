@@ -73,7 +73,7 @@
                                     <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
                                 </div>
                                 
-                                <p class="card-text">{{ review.comment }}</p>
+                                <p class="card-text">{{ review.content }}</p>
                                 
                                 {% if user.is_authenticated %}
                                     <div class="d-flex align-items-center">

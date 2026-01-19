@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Avg, Count, Case, When, Value, IntegerField
+from django.db.models import Q, Avg, Count, Case, When, Value, IntegerField, Prefetch
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django import forms
@@ -81,7 +81,11 @@ def beer_detail(request, slug):
     beer = get_object_or_404(Beer.objects.select_related('brewery', 'category'), slug=slug)
     reviews = Review.objects.filter(
         beer=beer, is_approved=True
-    ).select_related('user').order_by('-created_at')
+    ).select_related('user').annotate(
+        likes_count=Count('likes', distinct=True)
+    ).prefetch_related(
+        Prefetch('comments', queryset=ReviewComment.objects.filter(is_approved=True).select_related('user'))
+    ).order_by('-created_at')
     
     # Pagination for reviews
     paginator = Paginator(reviews, 10)
@@ -124,6 +128,7 @@ def beer_detail(request, slug):
     context = {
         'beer': beer,
         'page_obj': page_obj,
+        'reviews': page_obj,  # Template expects 'reviews'
         'stats': stats,
         'user_review': user_review,
     }
@@ -294,6 +299,9 @@ def review_list(request):
     """List all approved reviews"""
     reviews = Review.objects.filter(is_approved=True).select_related(
         'beer', 'beer__brewery', 'user'
+    ).annotate(
+        likes_count=Count('likes', distinct=True),
+        comments_count=Count('comments', distinct=True)
     ).order_by('-created_at')
     
     # Pagination
@@ -303,7 +311,7 @@ def review_list(request):
     
     context = {
         'page_obj': page_obj,
-        'total_reviews': reviews.count(),
+        'total_reviews': page_obj.paginator.count,
     }
     return render(request, 'reviews/review_list.html', context)
 
