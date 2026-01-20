@@ -1,0 +1,3 @@
+## 2024-05-23 - N+1 Queries in Review Detail View
+**Learning:** The `review_detail` view fetches a review but fails to eager-load related models (`user`, `beer`, `brewery`, `category`). This results in multiple separate database queries when these fields are accessed in the template (N+1 problem). Specifically, accessing `review.beer.brewery.name` and `review.beer.category.name` triggers additional lookups.
+**Action:** Use `select_related` when retrieving the primary object in detail views if related fields are accessed in the template. For `Review`, this means `Review.objects.select_related('user', 'beer__brewery', 'beer__category')`.
