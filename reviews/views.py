@@ -174,7 +174,11 @@ def review_create(request, beer_slug=None):
 
 def review_detail(request, pk):
     """Detailed view of a single review"""
-    review = get_object_or_404(Review, pk=pk, is_approved=True)
+    # Optimization: Eager load related fields to prevent N+1 queries
+    queryset = Review.objects.select_related(
+        'user', 'beer__brewery', 'beer__category'
+    )
+    review = get_object_or_404(queryset, pk=pk, is_approved=True)
     comments = review.comments.filter(is_approved=True).select_related('user')
     
     # Handle comment form
