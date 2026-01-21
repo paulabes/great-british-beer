@@ -69,7 +69,7 @@ def beer_list(request):
         'page_obj': page_obj,
         'is_paginated': page_obj.has_other_pages(),
         'form': form,
-        'total_beers': beers.count(),
+        'total_beers': page_obj.paginator.count,
         'categories': categories,
         'breweries': breweries,
     }
@@ -244,7 +244,7 @@ def category_detail(request, slug):
     context = {
         'category': category,
         'page_obj': page_obj,
-        'total_beers': beers.count(),
+        'total_beers': page_obj.paginator.count,
     }
     return render(request, 'reviews/category_detail.html', context)
 
@@ -264,7 +264,7 @@ def brewery_list(request):
         'breweries': page_obj,
         'page_obj': page_obj,
         'is_paginated': page_obj.has_other_pages(),
-        'total_breweries': breweries.count(),
+        'total_breweries': page_obj.paginator.count,
     }
     return render(request, 'reviews/brewery_list.html', context)
 
@@ -285,7 +285,7 @@ def brewery_detail(request, slug):
     context = {
         'brewery': brewery,
         'page_obj': page_obj,
-        'total_beers': beers.count(),
+        'total_beers': page_obj.paginator.count,
     }
     return render(request, 'reviews/brewery_detail.html', context)
 
@@ -294,6 +294,9 @@ def review_list(request):
     """List all approved reviews"""
     reviews = Review.objects.filter(is_approved=True).select_related(
         'beer', 'beer__brewery', 'user'
+    ).annotate(
+        likes_count=Count('likes', distinct=True),
+        comments_count=Count('comments', distinct=True)
     ).order_by('-created_at')
     
     # Pagination
@@ -303,7 +306,7 @@ def review_list(request):
     
     context = {
         'page_obj': page_obj,
-        'total_reviews': reviews.count(),
+        'total_reviews': page_obj.paginator.count,
     }
     return render(request, 'reviews/review_list.html', context)
 
