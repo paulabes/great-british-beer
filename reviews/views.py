@@ -174,9 +174,26 @@ def review_create(request, beer_slug=None):
 
 def review_detail(request, pk):
     """Detailed view of a single review"""
-    review = get_object_or_404(Review, pk=pk, is_approved=True)
+    # Optimized query to fetch related data in one go
+    review = get_object_or_404(
+        Review.objects.select_related(
+            'beer__brewery',
+            'beer__category',
+            'user'
+        ),
+        pk=pk,
+        is_approved=True
+    )
     comments = review.comments.filter(is_approved=True).select_related('user')
     
+    # Fetch other reviews efficiently to avoid N+1 queries in the sidebar
+    other_reviews = Review.objects.filter(
+        beer=review.beer,
+        is_approved=True
+    ).exclude(
+        id=review.id
+    ).select_related('user').order_by('-created_at')[:3]
+
     # Handle comment form
     comment_form = None
     if request.user.is_authenticated:
@@ -203,6 +220,7 @@ def review_detail(request, pk):
         'comment_form': comment_form,
         'user_liked': user_liked,
         'like_count': review.likes.count(),
+        'other_reviews': other_reviews,
     }
     return render(request, 'reviews/review_detail.html', context)
 
