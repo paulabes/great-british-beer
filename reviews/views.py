@@ -14,7 +14,7 @@ def beer_list(request):
     """List all beers with search and filtering"""
     form = BeerSearchForm(request.GET)
     beers = Beer.objects.select_related('brewery', 'category').annotate(
-        avg_rating=Avg('reviews__rating', filter=Q(reviews__is_approved=True)),
+        average_rating=Avg('reviews__rating', filter=Q(reviews__is_approved=True)),
         review_count=Count('reviews', filter=Q(reviews__is_approved=True))
     )
     
@@ -34,7 +34,7 @@ def beer_list(request):
         
         min_rating = form.cleaned_data.get('min_rating')
         if min_rating:
-            beers = beers.filter(avg_rating__gte=int(min_rating))
+            beers = beers.filter(average_rating__gte=int(min_rating))
         
         abv_range = form.cleaned_data.get('abv_range')
         if abv_range == 'low':
@@ -46,8 +46,10 @@ def beer_list(request):
         
         sort_by = form.cleaned_data.get('sort_by')
         if sort_by:
-            if sort_by in ['avg_rating', '-avg_rating']:
-                beers = beers.order_by(f'{sort_by}', '-review_count')
+            if sort_by == 'avg_rating':
+                beers = beers.order_by('average_rating', '-review_count')
+            elif sort_by == '-avg_rating':
+                beers = beers.order_by('-average_rating', '-review_count')
             else:
                 beers = beers.order_by(sort_by)
         else:
