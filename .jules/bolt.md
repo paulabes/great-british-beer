@@ -1,0 +1,3 @@
+## 2024-05-22 - Annotation Mismatch and Test Suite Repair
+**Learning:** Verified that Django templates access annotations as attributes. A mismatch between view annotation (`avg_rating`) and template usage (`beer.average_rating`) caused a feature (star ratings) to be silently broken. Fixing the annotation name in the view resolved the issue efficiently, avoiding potential N+1 queries that would have occurred if the template had successfully called the model method `get_average_rating` via a property or filter.
+**Action:** When debugging missing data in templates, always check if the view annotation name matches the template variable exactly. Also, ensure the test suite is functional before attempting performance optimizations to ensure no regressions.
