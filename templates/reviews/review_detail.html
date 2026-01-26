@@ -41,7 +41,7 @@
                     
                     <!-- Review Content -->
                     <div class="review-content">
-                        {{ review.comment|safe }}
+                        {{ review.content|safe }}
                     </div>
                     
                     <!-- Review Actions -->
@@ -155,32 +155,30 @@
             </div>
             
             <!-- Related Reviews -->
-            {% if review.beer.reviews.count > 1 %}
+            {% if related_reviews %}
                 <div class="card">
                     <div class="card-header">
                         <h6 class="mb-0">Other Reviews of {{ review.beer.name }}</h6>
                     </div>
                     <div class="card-body">
-                        {% for other_review in review.beer.reviews.all|slice:":3" %}
-                            {% if other_review.id != review.id %}
-                                <div class="d-flex mb-2">
-                                    <div class="me-2">
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= other_review.rating %}
-                                                <i class="fas fa-star text-warning small"></i>
-                                            {% else %}
-                                                <i class="far fa-star text-warning small"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <small>
-                                            <strong>{{ other_review.user.get_full_name|default:other_review.user.username }}</strong><br>
-                                            {{ other_review.comment|truncatewords:10 }}
-                                        </small>
-                                    </div>
+                        {% for other_review in related_reviews %}
+                            <div class="d-flex mb-2">
+                                <div class="me-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= other_review.rating %}
+                                            <i class="fas fa-star text-warning small"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-warning small"></i>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
-                            {% endif %}
+                                <div class="flex-grow-1">
+                                    <small>
+                                        <strong>{{ other_review.user.get_full_name|default:other_review.user.username }}</strong><br>
+                                        {{ other_review.content|striptags|truncatewords:10 }}
+                                    </small>
+                                </div>
+                            </div>
                         {% endfor %}
                         <a href="{% url 'reviews:beer_detail' review.beer.slug %}" class="btn btn-sm btn-outline-primary">View All Reviews</a>
                     </div>
