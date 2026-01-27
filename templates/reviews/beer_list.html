@@ -117,17 +117,17 @@
                                         {% endif %}
                                     </div>
 
-                                    {% if beer.average_rating %}
+                                    {% if beer.avg_rating %}
                                         <div class="star-rating mb-2">
                                             {% for i in "12345" %}
-                                                {% if forloop.counter <= beer.average_rating %}
+                                                {% if forloop.counter <= beer.avg_rating %}
                                                     <i class="bi bi-star-fill"></i>
                                                 {% else %}
                                                     <i class="bi bi-star"></i>
                                                 {% endif %}
                                             {% endfor %}
                                             <span class="ms-2 small text-muted">
-                                                {{ beer.average_rating|floatformat:1 }}
+                                                {{ beer.avg_rating|floatformat:1 }}
                                                 ({{ beer.review_count }} review{{ beer.review_count|pluralize }})
                                             </span>
                                         </div>
