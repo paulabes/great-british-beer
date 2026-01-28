@@ -73,7 +73,7 @@
                                     <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
                                 </div>
                                 
-                                <p class="card-text">{{ review.comment }}</p>
+                                <p class="card-text">{{ review.content|safe }}</p>
                                 
                                 {% if user.is_authenticated %}
                                     <div class="d-flex align-items-center">
@@ -104,7 +104,7 @@
                                             <div class="border-start ps-3 mb-2">
                                                 <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
                                                 <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y" }}</small>
-                                                <p class="mb-0">{{ comment.comment }}</p>
+                                                <p class="mb-0">{{ comment.content }}</p>
                                             </div>
                                         {% endfor %}
                                     </div>

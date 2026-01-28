@@ -1,0 +1,3 @@
+## 2024-05-22 - Broken Tests and Templates
+**Learning:** The `beer_detail` view was failing to pass `reviews` to the context, and templates used incorrect field names (`comment` vs `content`), effectively hiding all reviews and comments. Furthermore, the test suite `tests/test_reviews.py` contained invalid data setup (strings for ForeignKeys) which masked these issues by failing on setup rather than assertion.
+**Action:** When optimizing, always verify that the code being optimized is actually running (i.e., data is displayed). If tests fail on setup, investigate immediately as it may indicate broken core functionality or test rot.

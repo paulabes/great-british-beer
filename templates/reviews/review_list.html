@@ -63,8 +63,10 @@
                                         <span class="ms-2">{{ review.rating }}/5</span>
                                     </div>
 
+                                    <h5 class="card-title h6">{{ review.title }}</h5>
+
                                     <!-- Review excerpt -->
-                                    <p class="card-text">{{ review.comment|truncatewords:20|striptags }}</p>
+                                    <p class="card-text">{{ review.content|safe|truncatewords:20|striptags }}</p>
 
                                     <!-- Reviewer info -->
                                     <div class="d-flex justify-content-between align-items-center">
